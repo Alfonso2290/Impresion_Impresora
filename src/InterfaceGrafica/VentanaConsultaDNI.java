@@ -1,11 +1,14 @@
 package InterfaceGrafica;
 
 import BEAN.ClienteBEAN;
+import BEAN.ProductoBEAN;
 import DAO.ClienteDAO;
+import DAO.ProductoDAO;
 import Principal.VentanaProcesos;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.util.*;
 
 public class VentanaConsultaDNI extends JFrame {
 
@@ -13,7 +16,7 @@ public class VentanaConsultaDNI extends JFrame {
     private JLabel dni,titulo;
     private JTextField txtDni;
     private JPanel panel;
-    private String dniCliente,nomProducto;
+    private String dniCliente;
     private JSeparator h1;
     
     public VentanaConsultaDNI(){
@@ -103,10 +106,13 @@ public class VentanaConsultaDNI extends JFrame {
             dniCliente=txtDni.getText();
             ClienteBEAN cliente=new ClienteBEAN();
             cliente.setDni(dniCliente);
-            ClienteDAO clienteDAO=new ClienteDAO();
-            nomProducto=clienteDAO.getProductoMasConsumido(cliente);
+            ProductoDAO productoDAO=new ProductoDAO();
+            ArrayList<ProductoBEAN> lista;
+            String nombreProducto=productoDAO.getNombreProductoMasConsumido(cliente);
+            String codigoProducto=productoDAO.getCodigoProductoMasConsumido(nombreProducto);
+            lista=productoDAO.getProductoMasConsumido(codigoProducto,nombreProducto);
             dispose();
-            Ventana miVentana=new Ventana(nomProducto);
+            Ventana miVentana=new Ventana(lista);
             miVentana.setVisible(true);
             miVentana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         }

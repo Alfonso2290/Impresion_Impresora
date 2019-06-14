@@ -15,11 +15,11 @@ public class ProductoDAO {
     private String sql="";
     private ArrayList<ProductoBEAN> lista;
     
-    public ArrayList<ProductoBEAN> getProductoMasConsumido(ClienteBEAN cliente){
-        
+    public String getNombreProductoMasConsumido(ClienteBEAN cliente){
+        String nombreProducto="";
         try{
             conexion=new ConexionBD();
-            sql="SELECT TOP 1 D.NOMBRE AS PRODUCTO,D.IMAGEN ";
+            sql="SELECT TOP 1 D.NOMBRE AS PRODUCTO ";
             sql+="FROM CLIENTE A INNER JOIN VENTA B ";
             sql+="ON A.DNI=B.DNI ";
             sql+="INNER JOIN DETALLE_VENTA C ";
@@ -27,18 +27,62 @@ public class ProductoDAO {
             sql+="INNER JOIN PRODUCTO D ";
             sql+="ON C.COD_PRODUCTO=D.COD_PRODUCTO ";
             sql+="WHERE A.DNI=? ";
-            sql+="GROUP BY D.NOMBRE,D.IMAGEN ";
+            sql+="GROUP BY (D.NOMBRE) ";
             sql+="ORDER BY COUNT(D.NOMBRE) DESC ";
             instruccion=conexion.getConexionBD().prepareStatement(sql);
             instruccion.setString(1, cliente.getDni());
+            tabla=instruccion.executeQuery();
+            
+            if(tabla.next()){
+                nombreProducto=tabla.getString(1);
+            }
+            
+            
+        }catch(Exception ex){
+            System.out.println("Error");
+            nombreProducto=null;
+        }
+        return nombreProducto;
+    }
+    
+    public String getCodigoProductoMasConsumido(String nombreProducto){
+        String codigoProducto="";
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT COD_PRODUCTO FROM PRODUCTO ";
+            sql+="WHERE NOMBRE=? ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1, nombreProducto);
+            tabla=instruccion.executeQuery();
+            
+            if(tabla.next()){
+                codigoProducto=tabla.getString(1);
+            }
+            
+            
+        }catch(Exception ex){
+            System.out.println("Error");
+            codigoProducto=null;
+        }
+        return codigoProducto;
+    }
+    
+    public ArrayList<ProductoBEAN> getProductoMasConsumido(String codigoProducto,String nombreProducto){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT IMAGEN FROM PRODUCTO ";
+            sql+="WHERE COD_PRODUCTO=? ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1, codigoProducto);
             tabla=instruccion.executeQuery();
             lista=new ArrayList<ProductoBEAN>();
             
             if(tabla.next()){
                 ProductoBEAN producto=new ProductoBEAN();
-                producto.setNombre(tabla.getString(1));
-                producto.setImagen(tabla.getBytes(2));
-
+                producto.setImagen(tabla.getBytes(1));
+                producto.setNombre(nombreProducto);
+                
                 lista.add(producto);
             }
             
@@ -49,7 +93,7 @@ public class ProductoDAO {
         }
         return lista;
     }
-    //**********************************************************
+    
     public ArrayList<ProductoBEAN> getListaProductos(){
         
         try{
@@ -160,7 +204,7 @@ public class ProductoDAO {
         int i=0;
         try{
             conexion=new ConexionBD();
-            sql="INSERT INTO PRODUCTO VALUES(?,?,?,?,?,?)";
+            sql="INSERT INTO PRODUCTO VALUES(?,?,?,?,?,?,?)";
             instruccion=conexion.getConexionBD().prepareStatement(sql);
             instruccion.setString(1, producto.getCodProducto());
             instruccion.setString(2, producto.getNombre());
@@ -168,6 +212,7 @@ public class ProductoDAO {
             instruccion.setDouble(4, producto.getPrecioVenta());
             instruccion.setInt(5, producto.getCantidad());
             instruccion.setInt(6, producto.getEstado());
+            instruccion.setBytes(7, producto.getImagen());
             i=instruccion.executeUpdate();
             
         }catch(Exception e){

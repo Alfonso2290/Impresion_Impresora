@@ -3,8 +3,9 @@ package InterfaceGraficaRegistro;
 
 import BEAN.*;
 import DAO.*;
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 import javax.swing.*;
 
 public class VentanaRegistroProductos extends JFrame implements ActionListener,FocusListener
@@ -14,7 +15,7 @@ public class VentanaRegistroProductos extends JFrame implements ActionListener,F
     public VentanaRegistroProductos()
     {
         setTitle("Registrar Producto");
-        setSize(350,530);
+        setSize(500,530);
         setResizable(false);
         setLocationRelativeTo(null);
         Inicio();
@@ -66,6 +67,7 @@ public class VentanaRegistroProductos extends JFrame implements ActionListener,F
     
     private void eventoGuardar()
     {
+        File ruta = new File(miPanel.getRutaImagen());
         String nom,cod,des,can,pv,est;
         cod=miPanel.getTxtCod().getText();
         nom=miPanel.getTxtNom().getText();
@@ -104,6 +106,7 @@ public class VentanaRegistroProductos extends JFrame implements ActionListener,F
             JOptionPane.showMessageDialog(null, "Ustede debe llenar el campo Estado");
             miPanel.getTxtEst().requestFocus();
         }
+        
         else
         {
             ProductoBEAN producto=new ProductoBEAN();
@@ -113,6 +116,15 @@ public class VentanaRegistroProductos extends JFrame implements ActionListener,F
             producto.setPrecioVenta(Double.parseDouble(pv));
             producto.setCantidad(Integer.parseInt(can));
             producto.setEstado(Integer.parseInt(est));
+            
+            try{
+                byte[] icono = new byte[(int) ruta.length()];
+                InputStream input = new FileInputStream(ruta);
+                input.read(icono);
+                producto.setImagen(icono);
+            }catch(Exception ex){
+                producto.setImagen(null);
+            }
             
             ProductoDAO productoDAO=new ProductoDAO();
 

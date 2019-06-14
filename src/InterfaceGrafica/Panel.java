@@ -3,15 +3,21 @@ package InterfaceGrafica;
 import javax.swing.*;
 import java.awt.*;
 import java.net.*;
+import BEAN.*;
+import java.awt.image.*;
+import java.io.*;
+import java.util.*;
+import javax.imageio.ImageIO;
 
 public class Panel extends JPanel{
 
 	private JLabel titulo,msj1,msj2,msj3,icono,t1,t2,t3;
-	private String nomProducto,porcentaje,mensaje,directorio;
+	private String porcentaje,mensaje,directorio;
         private int x,y,dx,dy,imgx,imgy,imgdx,imgdy;
+        private ArrayList<ProductoBEAN> lista;
         
-	public Panel(String nomProducto) {
-            this.nomProducto=nomProducto;
+	public Panel(ArrayList<ProductoBEAN> lista) {
+            this.lista=lista;
             setBackground(Color.LIGHT_GRAY.brighter());
             inicioComponentes();
 	}
@@ -32,18 +38,42 @@ public class Panel extends JPanel{
             msj1.setFont(fondo1);
             
             
-            if(nomProducto==null || nomProducto.equals("")){
+            if(lista==null || lista.size()==0){
                 porcentaje="5%";
                 mensaje="en cualquiera de nuestros productos";
                 x=10;y=100;dx=300;dy=30;
                 directorio="/imagenes/cafeteria.png";
                 imgx=30;imgy=140;imgdx=180;imgdy=120;
+                
+                URL ruta=this.getClass().getResource(directorio);
+                icono=new JLabel(new ImageIcon(ruta));
+                icono.setBounds(imgx,imgy,imgdx,imgdy);
             }else{
                 porcentaje="20%";
-                mensaje="en " + nomProducto.toUpperCase();
                 x=80;y=100;dx=200;dy=30;
-                directorio="/imagenes/" + nomProducto + ".png";
                 imgx=30;imgy=150;imgdx=180;imgdy=100;
+                icono=new JLabel();
+                icono.setBounds(imgx,imgy,imgdx,imgdy);
+                 
+ 
+                for(ProductoBEAN pro:lista){
+                 
+                    mensaje="en " + pro.getNombre().toUpperCase();
+                    try{
+                        byte[] bi = pro.getImagen();
+                        InputStream is=new ByteArrayInputStream(bi);//cambio instancia
+                        BufferedImage image=ImageIO.read(is);
+                        ImageIcon foto=new ImageIcon(bi);
+                        
+                        Image img=foto.getImage();
+                        Image newimg=img.getScaledInstance(240, 240, java.awt.Image.SCALE_SMOOTH);
+
+                        ImageIcon newicon=new ImageIcon(newimg);
+                        icono.setIcon(newicon);
+                    }catch(Exception ex){
+                        ex.printStackTrace();
+                    }
+                } 
             }
             msj2=new JLabel(porcentaje);
             msj2.setBounds(175, 75, 60, 30);
@@ -52,10 +82,6 @@ public class Panel extends JPanel{
             msj3=new JLabel(mensaje);
             msj3.setBounds(x,y,dx,dy);
             msj3.setFont(fondo1);
-
-            URL ruta=this.getClass().getResource(directorio);
-            icono=new JLabel(new ImageIcon(ruta));
-            icono.setBounds(imgx,imgy,imgdx,imgdy);
 
             t1=new JLabel("Términos y Condiciones");
             t1.setBounds(3, 275, 150, 20);

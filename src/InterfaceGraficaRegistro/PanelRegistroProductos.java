@@ -4,17 +4,26 @@ package InterfaceGraficaRegistro;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import javax.imageio.ImageIO;
+import javax.swing.border.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class PanelRegistroProductos extends JPanel  
 {
-    private JLabel mensaje,titulo,cod,nom,des,pv,can,est;
+    private JLabel mensaje,titulo,cod,nom,des,pv,can,est,labelimagen;
     private JTextField txtNom,txtCod,txtDes,txtPv,txtCan,txtEst;
-    private JButton btnGuardar,btnCancelar,btnAtras;
+    private JButton btnGuardar,btnCancelar,btnAtras,btnCargarFoto;
     private JSeparator h1,h2,h3,h4,h5,h6;
+    private String rutaImagen=null;
+    private FileInputStream file;
+    public static int longitudBytes;
     
     public PanelRegistroProductos()
     {
         Inicio();
+        txtCod.requestFocus();
     }
     
     private void Inicio()
@@ -25,9 +34,10 @@ public class PanelRegistroProductos extends JPanel
         Font fuenteCampos=new Font("Decker", Font.PLAIN, 14);
         Font fuenteCamposLabel=new Font("Decker", Font.BOLD, 16);
         Font fuenteMensaje=new Font("Decker",Font.PLAIN,12);
+        Font fuenteCamposboton=new Font("Decker", Font.BOLD, 14);
         
         titulo=new JLabel("REGISTRAR PRODUCTO");
-        titulo.setBounds(70,10,300,30);
+        titulo.setBounds(145,10,300,30);
         titulo.setFont(fuenteTitulo);
         titulo.setForeground(ColorFuente);
         
@@ -46,6 +56,50 @@ public class PanelRegistroProductos extends JPanel
         h1.setBounds(50,115,250,20);
         h1.setOpaque(false);
         h1.setBackground(Color.gray);
+        
+        labelimagen=new JLabel();
+        labelimagen.setBounds(320,70,150,100);
+        labelimagen.setBorder(new LineBorder(Color.gray));
+        
+        btnCargarFoto=new JButton("Cargar Imagen");
+        btnCargarFoto.setBounds(320,180,150,30);
+        btnCargarFoto.setFont(fuenteCamposboton);
+        btnCargarFoto.setBackground(null);
+        btnCargarFoto.setForeground(ColorFuente);
+        btnCargarFoto.addMouseListener(new ColorBotones(ColorFuente,Color.WHITE,btnCargarFoto));
+        btnCargarFoto.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                labelimagen.setIcon(null);
+                JFileChooser j=new JFileChooser();
+                j.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                int estado=j.showOpenDialog(null);
+                if(estado==JFileChooser.APPROVE_OPTION)
+                {
+                    try
+                    {
+                        file=new FileInputStream(j.getSelectedFile());
+                        rutaImagen=j.getSelectedFile().toString();
+                        longitudBytes=(int)j.getSelectedFile().length();
+                        try
+                        {
+                            Image icono=ImageIO.read(j.getSelectedFile()).getScaledInstance(labelimagen.getWidth(), labelimagen.getHeight(), Image.SCALE_DEFAULT);
+                            labelimagen.setIcon(new ImageIcon(icono));
+                            labelimagen.updateUI();
+                        }
+                        catch(IOException ex)
+                        {
+                            JOptionPane.showMessageDialog(null,"Imagen: " + ex);
+                        }
+                    }
+                    catch(FileNotFoundException ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        });
+        
         
         mensaje=new JLabel();
         mensaje.setBounds(190,70,120,20);
@@ -132,14 +186,14 @@ public class PanelRegistroProductos extends JPanel
         h6.setBackground(Color.gray);
         
         btnGuardar=new JButton("Guardar");
-        btnGuardar.setBounds(50,460,110,30);
+        btnGuardar.setBounds(125,460,110,30);
         btnGuardar.setFont(fuenteCamposLabel);
         btnGuardar.setBackground(null);
         btnGuardar.setForeground(ColorFuente);
         btnGuardar.addMouseListener(new ColorBotones(ColorFuente,Color.WHITE,btnGuardar));
         
         btnCancelar=new JButton("Cancelar");
-        btnCancelar.setBounds(175,460,120,30);
+        btnCancelar.setBounds(250,460,120,30);
         btnCancelar.setFont(fuenteCamposLabel);
         btnCancelar.setBackground(null);
         btnCancelar.setForeground(ColorFuente);
@@ -176,6 +230,8 @@ public class PanelRegistroProductos extends JPanel
         add(h4);
         add(h5);
         add(h6);
+        add(labelimagen);
+        add(btnCargarFoto);
     }
 
     public JTextField getTxtNom() {
@@ -217,8 +273,14 @@ public class PanelRegistroProductos extends JPanel
     public JButton getBtnAtras() {
         return btnAtras;
     }
-    
-    
+
+    public String getRutaImagen() {
+        return rutaImagen;
+    }
+
+    public FileInputStream getFile() {
+        return file;
+    }
     
     public void limpiarCampos()
     {
@@ -228,6 +290,7 @@ public class PanelRegistroProductos extends JPanel
         txtPv.setText("");
         txtCan.setText("");
         txtEst.setText("");
+        labelimagen.setIcon(null);//
         txtCod.requestFocus();
     }
     

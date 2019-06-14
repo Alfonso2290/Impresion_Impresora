@@ -4,16 +4,18 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.print.*;
 import javax.swing.*;
+import BEAN.*;
+import java.util.*;
 
 public class Ventana extends JFrame{
 
     private JButton btnImprimir,btnAtras;
     private Panel miPanel;
-    private String nomProducto;
+    private ArrayList<ProductoBEAN> lista;
     private JPanel lamina;
 
-    public Ventana(String nomProducto) {
-        this.nomProducto=nomProducto;
+    public Ventana(ArrayList<ProductoBEAN> lista) {
+        this.lista=lista;
         inicioComponentes();
     }
 
@@ -27,7 +29,7 @@ public class Ventana extends JFrame{
         
         setLayout(new BorderLayout());
 
-        miPanel=new Panel(this.nomProducto);
+        miPanel=new Panel(this.lista);
         add(miPanel,BorderLayout.CENTER);
         
         lamina=new JPanel();
