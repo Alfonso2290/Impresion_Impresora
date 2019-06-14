@@ -66,7 +66,7 @@ public class Panel extends JPanel{
                         ImageIcon foto=new ImageIcon(bi);
                         
                         Image img=foto.getImage();
-                        Image newimg=img.getScaledInstance(240, 240, java.awt.Image.SCALE_SMOOTH);
+                        Image newimg=img.getScaledInstance(imgdx,imgdy, java.awt.Image.SCALE_SMOOTH);
 
                         ImageIcon newicon=new ImageIcon(newimg);
                         icono.setIcon(newicon);
