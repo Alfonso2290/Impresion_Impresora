@@ -29,6 +29,7 @@ public class VentanaRegistroProductos extends JFrame implements ActionListener,F
         miPanel.getBtnGuardar().addActionListener(this);
         miPanel.getBtnCancelar().addActionListener(this);
         miPanel.getTxtCod().addFocusListener(this);
+        miPanel.getTxtNom().addFocusListener(this);
         
         miPanel.getBtnCancelar().addKeyListener(new cambioCampo());
         miPanel.getBtnGuardar().addKeyListener(new cambioCampo());
@@ -146,7 +147,14 @@ public class VentanaRegistroProductos extends JFrame implements ActionListener,F
     @Override
     public void focusGained(FocusEvent e)
     {
-        miPanel.getMensaje().setText("");
+        if(e.getSource()==miPanel.getTxtCod())
+        {
+            miPanel.getMensaje().setText("");
+        }
+        if(e.getSource()==miPanel.getTxtNom())
+        {
+            miPanel.getMensaje2().setText("");
+        }
     }
     
     @Override
@@ -163,6 +171,20 @@ public class VentanaRegistroProductos extends JFrame implements ActionListener,F
             if(verificacion>0 && cod.compareTo("")!=0 )
             {
                 miPanel.getMensaje().setText("Producto Registrado");
+            }
+        }
+        
+        if(e.getSource()==miPanel.getTxtNom())
+        {
+            String nom=miPanel.getTxtNom().getText();
+            ProductoBEAN producto=new ProductoBEAN();
+            producto.setNombre(nom);
+            
+            ProductoDAO productoDAO=new ProductoDAO();
+            int verificacion=productoDAO.verificarNombreProducto(producto);
+            if(verificacion>0 && nom.compareTo("")!=0 )
+            {
+                miPanel.getMensaje2().setText("Nombre Registrado");
             }
         }
     }

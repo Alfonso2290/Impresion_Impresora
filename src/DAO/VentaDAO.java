@@ -5,6 +5,7 @@ import java.sql.*;
 import java.util.*;
 import UTIL.ConexionBD;
 import BEAN.VentaBEAN;
+import javax.swing.JOptionPane;
 
 public class VentaDAO {
 
@@ -95,6 +96,20 @@ public class VentaDAO {
         }
         
         return lista;
+    }
+    
+    public void eliminarVenta(VentaBEAN venta){
+
+        try{
+            conexion=new ConexionBD();
+            sql="DELETE FROM VENTA WHERE NUM_TICKET=? ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1, venta.getNumTicket());
+            instruccion.executeUpdate();
+            
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null,"Error!!..No se pudo eliminar el registro de la venta");
+        }
     }
 }
 

@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.*;
 import UTIL.ConexionBD;
 import BEAN.ClienteBEAN;
+import javax.swing.JOptionPane;
 
 public class ClienteDAO {
     private ConexionBD conexion=null;
@@ -135,5 +136,40 @@ public class ClienteDAO {
         
         return i;
     }
-          
+    
+    public void eliminarCliente(ClienteBEAN cliente){
+
+        try{
+            conexion=new ConexionBD();
+            sql="DELETE FROM CLIENTE WHERE DNI=? ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1, cliente.getDni());
+            instruccion.executeUpdate();
+            
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null,"Error!!..No se pudo eliminar el registro del cliente");
+        }
+    }
+    
+    public int modificarCliente(ClienteBEAN cliente){
+        int i=0;
+        try{
+            conexion=new ConexionBD();
+            sql="UPDATE CLIENTE SET NOMBRE=?,FECHA_NACIMIENTO=?,";
+            sql+="CELULAR=?,EMAIL=? ";
+            sql+="WHERE DNI=? ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1, cliente.getNombre());
+            instruccion.setString(2, cliente.getFechaNacimiento());
+            instruccion.setString(3, cliente.getCelular());
+            instruccion.setString(4, cliente.getEmail());
+            instruccion.setString(5, cliente.getDni());
+            i=instruccion.executeUpdate();
+            
+        }catch(Exception e){
+            System.out.println("Error!!..No se pudo modificar el registro del cliente");
+        }
+        
+        return i;
+    }
 }

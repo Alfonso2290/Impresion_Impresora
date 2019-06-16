@@ -5,9 +5,13 @@ public class ProductoBEAN
 {
     private String codProducto,nombre,descripcion;
     private double precioVenta;
-    private int cantidad,estado;
+    private int cantidad,estado,cantidadComprar;
     private byte[] imagen;
-
+    
+    public String toString(){
+        
+        return codProducto + " " + nombre + " " + descripcion + " " + precioVenta + " " + cantidad + " " + cantidadComprar;
+    }
     public String getCodProducto() {
         return codProducto;
     }
@@ -62,6 +66,14 @@ public class ProductoBEAN
 
     public void setImagen(byte[] imagen) {
         this.imagen = imagen;
+    }
+
+    public int getCantidadComprar() {
+        return cantidadComprar;
+    }
+
+    public void setCantidadComprar(int cantidadComprar) {
+        this.cantidadComprar = cantidadComprar;
     }
     
 }

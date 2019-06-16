@@ -3,6 +3,10 @@ package InterfaceGraficaConsulta;
 
 import BEAN.VentaBEAN;
 import DAO.VentaDAO;
+import UtilidadesVenta.GestionCeldasVentas;
+import UtilidadesVenta.GestionEncabezadoTablaVentas;
+import UtilidadesVenta.ModeloTablaVentas;
+import UtilidadesVenta.UtilidadesVentas;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -10,6 +14,7 @@ import java.util.*;
 import java.awt.event.*;
 import java.net.URL;
 import java.text.DecimalFormat;
+import javax.swing.border.*;
 
 public class PanelConsultaVentas extends JPanel
 {
@@ -22,9 +27,12 @@ public class PanelConsultaVentas extends JPanel
     private ArrayList<VentaBEAN> lista,listaDNI;
     private JLabel mensaje;
     private DecimalFormat formato;
+    private int filasTabla;
+    private int columnasTabla;
     
     public PanelConsultaVentas()
     {
+        setBorder(new EmptyBorder(5, 5, 5, 5));
         Inicio();
     }
 
@@ -40,11 +48,7 @@ public class PanelConsultaVentas extends JPanel
         capturarListas();
 
         cbDni=new JComboBox();
-        cbDni.addItem("-Seleccionar DNI-");
-        for(VentaBEAN obj: listaDNI)
-        {
-            cbDni.addItem(obj.getDni());
-        }
+        llenarComboBox();
         cbDni.setBounds(460, 30, 200, 30);
         cbDni.setFont(fuenteCampos);
         
@@ -63,38 +67,24 @@ public class PanelConsultaVentas extends JPanel
         retornar.setBounds(780, 30, 30, 30);
         retornar.addMouseListener(new AccionMouse());
         
-        modelo=new DefaultTableModel();
+        scroll=new JScrollPane();
         tabla=new JTable();
-        scroll=new JScrollPane(tabla);
-        
-        tabla.setFont(new Font("Arial",Font.BOLD,10));
-        
-        modelo.addColumn("Ticket");
-        modelo.addColumn("Dni");
-        modelo.addColumn("Fecha");
-        modelo.addColumn("Monto Total");
-        modelo.addColumn("IGV");
-        modelo.addColumn("Monto Neto");
-        
-        tabla.setModel(modelo);
-        tabla.setEnabled(false);
-        centrarTextoTabla();
+        tabla.setBackground(Color.WHITE);
+        tabla.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+        tabla.addMouseListener(new EventoEliminar());
+        tabla.setOpaque(false);
+        scroll.setViewportView(tabla);
 
-        capturarListaTabla();
-        
         mensaje=new JLabel();
         mensaje.setBounds(250,150,350,50);
         mensaje.setFont(new Font("Arial",Font.BOLD,18));
         mensaje.setForeground(Color.RED);
         
+        capturarListaTabla();
+        
         if(lista.size()!=0)
         {
-            for(VentaBEAN obj:lista)
-            {
-                modelo.addRow(new Object[]{obj.getNumTicket(),obj.getDni(),
-                obj.getFecha(),formato.format(obj.getMontoTotal()),
-                formato.format(obj.getIgv()),formato.format(obj.getMontoNeto())});
-            }
+            construirTabla();
 
             scroll.setBounds(10,80,800,250);
             
@@ -122,19 +112,18 @@ public class PanelConsultaVentas extends JPanel
         add(btnAtras);
     }
     
-    private void centrarTextoTabla()
-    {
-        DefaultTableCellRenderer tcr = new DefaultTableCellRenderer();
-        tcr.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        for(int i=0;i<tabla.getColumnCount();i++)
-            tabla.getColumnModel().getColumn(i).setCellRenderer(tcr);
-    }
-    
     private void capturarListas()
     {
         VentaDAO ventaDAO=new VentaDAO();
         listaDNI=ventaDAO.getListaDNIVentas();
+    }
+    
+    private void llenarComboBox(){
+        cbDni.addItem("-Seleccionar DNI-");
+        for(VentaBEAN obj: listaDNI)
+        {
+            cbDni.addItem(obj.getDni());
+        }
     }
     
     private void capturarListaTabla()
@@ -155,8 +144,11 @@ public class PanelConsultaVentas extends JPanel
             
             if(e.getSource()==btnBuscar)
             {
-                if(dni.equals("-Seleccionar Nombre-")==false)
+                if(dni.equals("-Seleccionar DNI-")==false)
                 {
+                    capturarListas();
+                    vaciarComboBox();
+                    llenarComboBox();
                     lista=ventaD.listarVentasFiltroDNI(venta);
                     llenarTabla("");
                 }
@@ -176,12 +168,7 @@ public class PanelConsultaVentas extends JPanel
         {
             scroll.setVisible(true);
             limpiarTabla();
-            for(VentaBEAN obj:lista)
-            {
-               modelo.addRow(new Object[]{obj.getNumTicket(),obj.getDni(),
-               obj.getFecha(),formato.format(obj.getMontoTotal()),
-               formato.format(obj.getIgv()),formato.format(obj.getMontoNeto())});
-            }
+            construirTabla();
             mensaje.setBounds(250,150,350,50);
             mensaje.setText("");
         }
@@ -199,6 +186,9 @@ public class PanelConsultaVentas extends JPanel
         {
             if(e.getSource()==retornar)
             {   
+                capturarListas();
+                vaciarComboBox();
+                llenarComboBox();
                 capturarListaTabla();
                 llenarTabla("");
                 cbDni.setSelectedIndex(0);
@@ -229,6 +219,14 @@ public class PanelConsultaVentas extends JPanel
         }
     }
     
+    public void vaciarComboBox(){
+        for(int i=0;i<cbDni.getItemCount();i++){
+            cbDni.removeItemAt(i);
+            i--;
+        }
+    }
+    
+    
     private class ColorBotones extends MouseAdapter
     {
         private Color colorFondo,colorLetra;
@@ -254,6 +252,136 @@ public class PanelConsultaVentas extends JPanel
             this.boton.setBackground(null);
             this.boton.setForeground(colorFondo);
             
+        }
+    }
+    
+    private void construirTabla() {
+        
+        ArrayList<String> titulosList=new ArrayList<>();
+
+        titulosList.add("Ticket");
+        titulosList.add("DNI");
+        titulosList.add("Fecha");
+        titulosList.add("Monto Total");
+        titulosList.add("IGV");
+        titulosList.add("Monto Neto");
+        titulosList.add(" ");
+        titulosList.add(" ");
+
+        String titulos[] = new String[titulosList.size()];
+        for (int i = 0; i < titulos.length; i++) {
+            titulos[i]=titulosList.get(i);
+        }
+    
+        Object[][] data =obtenerMatrizDatos(titulosList);
+        construirTabla(titulos,data);
+    }
+
+    private Object[][] obtenerMatrizDatos(ArrayList<String> titulosList) {
+
+        String informacion[][] = new String[lista.size()][titulosList.size()];
+
+        for (int x = 0; x < informacion.length; x++) {
+
+            informacion[x][UtilidadesVentas.NUMERO_TICKET] = lista.get(x).getNumTicket()+ "";
+            informacion[x][UtilidadesVentas.DNI] = lista.get(x).getDni()+ "";
+            informacion[x][UtilidadesVentas.FECHA_REGISTRO] = lista.get(x).getFecha()+ "";
+            informacion[x][UtilidadesVentas.MONTO_TOTAL] = lista.get(x).getMontoTotal()+ "";
+            informacion[x][UtilidadesVentas.IGV] = lista.get(x).getIgv()+ "";
+            informacion[x][UtilidadesVentas.MONTO_NETO] = lista.get(x).getMontoNeto()+ "";
+            informacion[x][UtilidadesVentas.DETALLE_VENTA] = "DETALLE";
+            informacion[x][UtilidadesVentas.ELIMINAR] = "ELIMINAR";
+        }
+
+        return informacion;
+    }
+
+    private void construirTabla(String[] titulos, Object[][] data) {
+      
+        modelo=new ModeloTablaVentas(data, titulos);
+        tabla.setModel(modelo);
+        
+        filasTabla=tabla.getRowCount();
+        columnasTabla=tabla.getColumnCount();
+        
+        tabla.getColumnModel().getColumn(UtilidadesVentas.MONTO_TOTAL).setCellRenderer(new GestionCeldasVentas("numerico"));
+        tabla.getColumnModel().getColumn(UtilidadesVentas.IGV).setCellRenderer(new GestionCeldasVentas("numerico"));
+        tabla.getColumnModel().getColumn(UtilidadesVentas.MONTO_NETO).setCellRenderer(new GestionCeldasVentas("numerico"));
+        tabla.getColumnModel().getColumn(UtilidadesVentas.DETALLE_VENTA).setCellRenderer(new GestionCeldasVentas("icono"));
+        tabla.getColumnModel().getColumn(UtilidadesVentas.ELIMINAR).setCellRenderer(new GestionCeldasVentas("icono"));
+
+        for (int i = 0; i < titulos.length-5; i++) {
+            tabla.getColumnModel().getColumn(i).setCellRenderer(new GestionCeldasVentas("texto"));
+        }
+
+        tabla.getTableHeader().setReorderingAllowed(false);
+        tabla.setRowHeight(25);
+        tabla.setGridColor(new java.awt.Color(0, 0, 0)); 
+        
+        tabla.getColumnModel().getColumn(UtilidadesVentas.NUMERO_TICKET).setPreferredWidth(150);
+        tabla.getColumnModel().getColumn(UtilidadesVentas.DNI).setPreferredWidth(130);
+        tabla.getColumnModel().getColumn(UtilidadesVentas.FECHA_REGISTRO).setPreferredWidth(180);
+        tabla.getColumnModel().getColumn(UtilidadesVentas.MONTO_TOTAL).setPreferredWidth(150);
+        tabla.getColumnModel().getColumn(UtilidadesVentas.IGV).setPreferredWidth(130);
+        tabla.getColumnModel().getColumn(UtilidadesVentas.MONTO_NETO).setPreferredWidth(150);
+        tabla.getColumnModel().getColumn(UtilidadesVentas.DETALLE_VENTA).setPreferredWidth(100);
+        tabla.getColumnModel().getColumn(UtilidadesVentas.ELIMINAR).setPreferredWidth(30);
+
+        JTableHeader jtableHeader = tabla.getTableHeader();
+        jtableHeader.setDefaultRenderer(new GestionEncabezadoTablaVentas());
+        tabla.setTableHeader(jtableHeader);
+
+        scroll.setViewportView(tabla);
+     }
+    
+    public class EventoEliminar extends MouseAdapter{
+        
+        public void mouseClicked(MouseEvent e){
+            int fila=tabla.rowAtPoint(e.getPoint());
+            int columna=tabla.columnAtPoint(e.getPoint());
+            if(columna==UtilidadesVentas.ELIMINAR){
+                EliminarRegistro(fila);
+            }else if(columna==UtilidadesVentas.DETALLE_VENTA){
+                MostrarDetalleVenta(fila);
+            }
+        }
+        
+        public void MostrarDetalleVenta(int fila){
+            /*String dni,nom,fecha,tel,email;
+            dni=tabla.getValueAt(fila,UtilidadesCliente.DNI).toString();
+            nom=tabla.getValueAt(fila,UtilidadesCliente.NOMBRE).toString();
+            tel=tabla.getValueAt(fila,UtilidadesCliente.TELEFONO).toString();
+            fecha=tabla.getValueAt(fila,UtilidadesCliente.FECHA).toString();
+            email=tabla.getValueAt(fila,UtilidadesCliente.EMAIL).toString();
+            
+            ClienteBEAN cliente=new ClienteBEAN();
+            cliente.setDni(dni);
+            cliente.setNombre(nom);
+            cliente.setCelular(tel);
+            cliente.setFechaNacimiento(fecha);
+            cliente.setEmail(email);
+            
+            VentanaModificacionCliente ventana=new VentanaModificacionCliente(cliente);
+            ventana.setVisible(true);
+            */
+        }
+        
+        public void EliminarRegistro(int fila){
+            String numTicket=tabla.getValueAt(fila,UtilidadesVentas.NUMERO_TICKET).toString();
+            VentaBEAN venta=new VentaBEAN();
+            venta.setNumTicket(numTicket);
+            VentaDAO ventaDAO=new VentaDAO();
+            int rpta=JOptionPane.showConfirmDialog(null,"Esta seguro que desea eliminar este registro?","Confirmación",JOptionPane.YES_NO_OPTION);
+            if(rpta==JOptionPane.YES_OPTION){
+                ventaDAO.eliminarVenta(venta);
+                capturarListas();
+                vaciarComboBox();
+                llenarComboBox();
+                cbDni.setSelectedIndex(0);
+                capturarListaTabla();
+                limpiarTabla();
+                construirTabla();
+            }
         }
     }
     

@@ -3,6 +3,7 @@ package InterfaceGraficaConsulta;
 
 import BEAN.ProductoBEAN;
 import DAO.ProductoDAO;
+import InterfaceGraficaModificacion.VentanaModificacionProducto;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.*;
@@ -10,6 +11,8 @@ import java.util.*;
 import java.awt.event.*;
 import java.net.URL;
 import java.text.DecimalFormat;
+import javax.swing.border.*;
+import UtilidadesProducto.*;
 
 public class PanelConsultaProductos extends JPanel
 {
@@ -22,9 +25,12 @@ public class PanelConsultaProductos extends JPanel
     private ArrayList<ProductoBEAN> lista,listaNombres;
     private JLabel mensaje;
     private DecimalFormat formato;
+    private int filasTabla;
+    private int columnasTabla;
     
     public PanelConsultaProductos()
     {
+        setBorder(new EmptyBorder(5, 5, 5, 5));
         Inicio();
     }
 
@@ -40,11 +46,7 @@ public class PanelConsultaProductos extends JPanel
         capturarListas();
 
         cbNombre=new JComboBox();
-        cbNombre.addItem("-Seleccionar Producto-");
-        for(ProductoBEAN obj: listaNombres)
-        {
-            cbNombre.addItem(obj.getNombre());
-        }
+        llenarComboBox();
         cbNombre.setBounds(460, 30, 200, 30);
         cbNombre.setFont(fuenteCampos);
         
@@ -63,38 +65,24 @@ public class PanelConsultaProductos extends JPanel
         retornar.setBounds(780, 30, 30, 30);
         retornar.addMouseListener(new AccionMouse());
         
-        modelo=new DefaultTableModel();
+        scroll=new JScrollPane();
         tabla=new JTable();
-        scroll=new JScrollPane(tabla);
-        
-        tabla.setFont(new Font("Arial",Font.BOLD,10));
-        
-        modelo.addColumn("Código");
-        modelo.addColumn("Nombre");
-        modelo.addColumn("Descripción");
-        modelo.addColumn("Precio Venta");
-        modelo.addColumn("Stock");
-        modelo.addColumn("Estado");
-        
-        tabla.setModel(modelo);
-        tabla.setEnabled(false);
-        centrarTextoTabla();
+        tabla.setBackground(Color.WHITE);
+        tabla.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+        tabla.addMouseListener(new EventoEliminar());
+        tabla.setOpaque(false);
+        scroll.setViewportView(tabla);
 
-        capturarListaTabla();
-        
         mensaje=new JLabel();
         mensaje.setBounds(250,150,350,50);
         mensaje.setFont(new Font("Arial",Font.BOLD,18));
         mensaje.setForeground(Color.RED);
         
+        capturarListaTabla();
+        
         if(lista.size()!=0)
         {
-            for(ProductoBEAN obj:lista)
-            {
-                modelo.addRow(new Object[]{obj.getCodProducto(),obj.getNombre(),
-                obj.getDescripcion(),formato.format(obj.getPrecioVenta()),
-                obj.getCantidad(),obj.getEstado()});
-            }
+            construirTabla();
 
             scroll.setBounds(10,80,800,250);
             
@@ -122,13 +110,12 @@ public class PanelConsultaProductos extends JPanel
         add(btnAtras);
     }
     
-    private void centrarTextoTabla()
-    {
-        DefaultTableCellRenderer tcr = new DefaultTableCellRenderer();
-        tcr.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        for(int i=0;i<tabla.getColumnCount();i++)
-            tabla.getColumnModel().getColumn(i).setCellRenderer(tcr);
+    private void llenarComboBox(){
+        cbNombre.addItem("-Seleccionar Producto-");
+        for(ProductoBEAN obj: listaNombres)
+        {
+            cbNombre.addItem(obj.getNombre());
+        }
     }
     
     private void capturarListas()
@@ -155,14 +142,18 @@ public class PanelConsultaProductos extends JPanel
             
             if(e.getSource()==btnBuscar)
             {
-                if(nombre.equals("-Seleccionar Nombre-")==false)
+                if(nombre.equals("-Seleccionar Producto-")==false)
                 {
+                    capturarListas();
+                    vaciarComboBox();
+                    llenarComboBox();
                     lista=productoD.listarProductosFiltroNombres(producto);
                     llenarTabla("");
                 }
                 else
                 {
                     lista=productoD.getListaProductos();
+                    System.out.println("Cantidad: " + lista.size());
                     llenarTabla("");
                     //JOptionPane.showMessageDialog(null, "Para realizar un filtro Usted debe seleccionar un Nombre y/o Distrito");
                 }
@@ -176,12 +167,7 @@ public class PanelConsultaProductos extends JPanel
         {
             scroll.setVisible(true);
             limpiarTabla();
-            for(ProductoBEAN obj:lista)
-            {
-                modelo.addRow(new Object[]{obj.getCodProducto(),obj.getNombre(),
-                obj.getDescripcion(),formato.format(obj.getPrecioVenta()),
-                obj.getCantidad(),obj.getEstado()});
-            }
+            construirTabla();
             mensaje.setBounds(250,150,350,50);
             mensaje.setText("");
         }
@@ -199,6 +185,9 @@ public class PanelConsultaProductos extends JPanel
         {
             if(e.getSource()==retornar)
             {   
+                capturarListas();
+                vaciarComboBox();
+                llenarComboBox();
                 capturarListaTabla();
                 llenarTabla("");
                 cbNombre.setSelectedIndex(0);
@@ -218,13 +207,18 @@ public class PanelConsultaProductos extends JPanel
         return btnAtras;
     }
     
-    
- 
     public void limpiarTabla()
     {
         for(int i=0;i<tabla.getRowCount();i++)
         {
             modelo.removeRow(i);
+            i--;
+        }
+    }
+    
+    public void vaciarComboBox(){
+        for(int i=0;i<cbNombre.getItemCount();i++){
+            cbNombre.removeItemAt(i);
             i--;
         }
     }
@@ -254,6 +248,144 @@ public class PanelConsultaProductos extends JPanel
             this.boton.setBackground(null);
             this.boton.setForeground(colorFondo);
             
+        }
+    }
+    
+    private void construirTabla() {
+        
+        ArrayList<String> titulosList=new ArrayList<>();
+
+        titulosList.add("Código");
+        titulosList.add("Nombre");
+        titulosList.add("Descripción");
+        titulosList.add("Precio Venta");
+        titulosList.add("Stock");
+        titulosList.add("Estado");
+        titulosList.add(" ");
+        titulosList.add(" ");
+
+        String titulos[] = new String[titulosList.size()];
+        for (int i = 0; i < titulos.length; i++) {
+            titulos[i]=titulosList.get(i);
+        }
+    
+        Object[][] data =obtenerMatrizDatos(titulosList);
+        construirTabla(titulos,data);
+    }
+
+    private Object[][] obtenerMatrizDatos(ArrayList<String> titulosList) {
+
+        String informacion[][] = new String[lista.size()][titulosList.size()];
+
+        for (int x = 0; x < informacion.length; x++) {
+
+            informacion[x][UtilidadesProductos.CODIGO_PRODUCTO] = lista.get(x).getCodProducto()+ "";
+            informacion[x][UtilidadesProductos.NOMBRE_PRODUCTO] = lista.get(x).getNombre()+ "";
+            informacion[x][UtilidadesProductos.DESCRIPCION_PRODUCTO] = lista.get(x).getDescripcion()+ "";
+            informacion[x][UtilidadesProductos.PRECIO_VENTA] = lista.get(x).getPrecioVenta()+ "";
+            informacion[x][UtilidadesProductos.CANTIDAD_STOCK] = lista.get(x).getCantidad()+ "";
+            informacion[x][UtilidadesProductos.ESTADO] = lista.get(x).getEstado()+ "";
+            informacion[x][UtilidadesProductos.MODIFICAR_PRODUCTO] = "MODIFICAR";
+            informacion[x][UtilidadesProductos.ELIMINAR_PRODUCTO] = "ELIMINAR";
+        }
+
+        return informacion;
+    }
+
+    private void construirTabla(String[] titulos, Object[][] data) {
+      
+        modelo=new ModeloTablaProductos(data, titulos);
+        tabla.setModel(modelo);
+        
+        filasTabla=tabla.getRowCount();
+        columnasTabla=tabla.getColumnCount();
+        
+        tabla.getColumnModel().getColumn(UtilidadesProductos.PRECIO_VENTA).setCellRenderer(new GestionCeldasProductos("numerico"));
+        tabla.getColumnModel().getColumn(UtilidadesProductos.CANTIDAD_STOCK).setCellRenderer(new GestionCeldasProductos("numerico"));
+        tabla.getColumnModel().getColumn(UtilidadesProductos.ESTADO).setCellRenderer(new GestionCeldasProductos("numerico"));
+        tabla.getColumnModel().getColumn(UtilidadesProductos.MODIFICAR_PRODUCTO).setCellRenderer(new GestionCeldasProductos("icono"));
+        tabla.getColumnModel().getColumn(UtilidadesProductos.ELIMINAR_PRODUCTO).setCellRenderer(new GestionCeldasProductos("icono"));
+
+        for (int i = 0; i < titulos.length-5; i++) {
+            tabla.getColumnModel().getColumn(i).setCellRenderer(new GestionCeldasProductos("texto"));
+        }
+
+        tabla.getTableHeader().setReorderingAllowed(false);
+        tabla.setRowHeight(25);
+        tabla.setGridColor(new java.awt.Color(0, 0, 0)); 
+        
+        tabla.getColumnModel().getColumn(UtilidadesProductos.CODIGO_PRODUCTO).setPreferredWidth(130);
+        tabla.getColumnModel().getColumn(UtilidadesProductos.NOMBRE_PRODUCTO).setPreferredWidth(350);
+        tabla.getColumnModel().getColumn(UtilidadesProductos.DESCRIPCION_PRODUCTO).setPreferredWidth(400);
+        tabla.getColumnModel().getColumn(UtilidadesProductos.PRECIO_VENTA).setPreferredWidth(130);
+        tabla.getColumnModel().getColumn(UtilidadesProductos.CANTIDAD_STOCK).setPreferredWidth(130);
+        tabla.getColumnModel().getColumn(UtilidadesProductos.ESTADO).setPreferredWidth(130);
+        tabla.getColumnModel().getColumn(UtilidadesProductos.MODIFICAR_PRODUCTO).setPreferredWidth(30);
+        tabla.getColumnModel().getColumn(UtilidadesProductos.ELIMINAR_PRODUCTO).setPreferredWidth(30);
+
+        JTableHeader jtableHeader = tabla.getTableHeader();
+        jtableHeader.setDefaultRenderer(new GestionEncabezadoTablaProductos());
+        tabla.setTableHeader(jtableHeader);
+
+        scroll.setViewportView(tabla);
+     }
+    
+    public class EventoEliminar extends MouseAdapter{
+        
+        public void mouseClicked(MouseEvent e){
+            int fila=tabla.rowAtPoint(e.getPoint());
+            int columna=tabla.columnAtPoint(e.getPoint());
+            if(columna==UtilidadesProductos.ELIMINAR_PRODUCTO){
+                EliminarRegistro(fila);
+            }else if(columna==UtilidadesProductos.MODIFICAR_PRODUCTO){
+                ModificarRegistro(fila);
+            }
+        }
+        
+        public void ModificarRegistro(int fila){
+            String cod,nom,des;
+            double pv;
+            int stock,est;
+            cod=tabla.getValueAt(fila,UtilidadesProductos.CODIGO_PRODUCTO).toString();
+            nom=tabla.getValueAt(fila,UtilidadesProductos.NOMBRE_PRODUCTO).toString();
+            des=tabla.getValueAt(fila,UtilidadesProductos.DESCRIPCION_PRODUCTO).toString();
+            pv=Double.parseDouble(tabla.getValueAt(fila,UtilidadesProductos.PRECIO_VENTA).toString());
+            stock=Integer.parseInt(tabla.getValueAt(fila,UtilidadesProductos.CANTIDAD_STOCK).toString());
+            est=Integer.parseInt(tabla.getValueAt(fila,UtilidadesProductos.ESTADO).toString());
+            
+            ProductoDAO DAO=new ProductoDAO();
+            byte[] imagen=DAO.getImagenProducto(cod);
+            
+            ProductoBEAN producto=new ProductoBEAN();
+            producto.setCodProducto(cod);
+            producto.setNombre(nom);
+            producto.setDescripcion(des);
+            producto.setPrecioVenta(pv);
+            producto.setCantidad(stock);
+            producto.setEstado(est);
+            producto.setImagen(imagen);
+            
+            VentanaModificacionProducto ventana=new VentanaModificacionProducto(producto);
+            ventana.setVisible(true);
+            
+        }
+        
+        public void EliminarRegistro(int fila){
+            String codigo=tabla.getValueAt(fila,UtilidadesProductos.CODIGO_PRODUCTO).toString();
+            ProductoBEAN producto=new ProductoBEAN();
+            producto.setCodProducto(codigo);
+            ProductoDAO productoDAO=new ProductoDAO();
+            int rpta=JOptionPane.showConfirmDialog(null,"Esta seguro que desea eliminar este registro?","Confirmación",JOptionPane.YES_NO_OPTION);
+            if(rpta==JOptionPane.YES_OPTION){
+                productoDAO.eliminarProducto(producto);
+                capturarListas();
+                vaciarComboBox();
+                llenarComboBox();
+                cbNombre.setSelectedIndex(0);
+                capturarListaTabla();
+                limpiarTabla();
+                construirTabla();
+            }
         }
     }
     

@@ -1,5 +1,6 @@
 package InterfaceGraficaRegistro;
 
+import InterfaceGraficaConsulta.VentanaConsultaVentas;
 import Principal.VentanaProcesos;
 import javax.swing.*;
 import java.awt.event.*;
@@ -113,14 +114,14 @@ public class VentanaRegistros extends JFrame{
                 ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             }
             
-            /*if(e.getSource()==venta || e.getSource()==ven){
+            if(e.getSource()==venta || e.getSource()==ven){
                 
                 dispose();
-                VentanaConsultaVentas ventana=new VentanaConsultaVentas();
+                VentanaRegistroVentas ventana=new VentanaRegistroVentas();
                 ventana.setVisible(true);
                 ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             }
-            */
+            
         }
         
     }

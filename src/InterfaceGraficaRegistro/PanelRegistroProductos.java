@@ -12,7 +12,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class PanelRegistroProductos extends JPanel  
 {
-    private JLabel mensaje,titulo,cod,nom,des,pv,can,est,labelimagen;
+    private JLabel mensaje,titulo,cod,nom,des,pv,can,est,labelimagen,mensaje2;
     private JTextField txtNom,txtCod,txtDes,txtPv,txtCan,txtEst;
     private JButton btnGuardar,btnCancelar,btnAtras,btnCargarFoto;
     private JSeparator h1,h2,h3,h4,h5,h6;
@@ -121,6 +121,11 @@ public class PanelRegistroProductos extends JPanel
         h2.setBounds(50,175,250,20);
         h2.setOpaque(false);
         h2.setBackground(Color.gray);
+        
+        mensaje2=new JLabel();
+        mensaje2.setBounds(190,130,120,20);
+        mensaje2.setForeground(ColorFuente);
+        mensaje2.setFont(fuenteMensaje);
         
         des=new JLabel("Descripción");
         des.setBounds(50,190,200,20);
@@ -232,6 +237,7 @@ public class PanelRegistroProductos extends JPanel
         add(h6);
         add(labelimagen);
         add(btnCargarFoto);
+        add(mensaje2);
     }
 
     public JTextField getTxtNom() {
@@ -260,6 +266,10 @@ public class PanelRegistroProductos extends JPanel
 
     public JLabel getMensaje() {
         return mensaje;
+    }
+
+    public JLabel getMensaje2() {
+        return mensaje2;
     }
     
     public JButton getBtnGuardar() {
