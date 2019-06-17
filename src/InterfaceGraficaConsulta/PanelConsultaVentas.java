@@ -307,7 +307,7 @@ public class PanelConsultaVentas extends JPanel
         tabla.getColumnModel().getColumn(UtilidadesVentas.MONTO_TOTAL).setCellRenderer(new GestionCeldasVentas("numerico"));
         tabla.getColumnModel().getColumn(UtilidadesVentas.IGV).setCellRenderer(new GestionCeldasVentas("numerico"));
         tabla.getColumnModel().getColumn(UtilidadesVentas.MONTO_NETO).setCellRenderer(new GestionCeldasVentas("numerico"));
-        tabla.getColumnModel().getColumn(UtilidadesVentas.DETALLE_VENTA).setCellRenderer(new GestionCeldasVentas("icono"));
+        tabla.getColumnModel().getColumn(UtilidadesVentas.DETALLE_VENTA).setCellRenderer(new GestionCeldasVentas("boton"));
         tabla.getColumnModel().getColumn(UtilidadesVentas.ELIMINAR).setCellRenderer(new GestionCeldasVentas("icono"));
 
         for (int i = 0; i < titulos.length-5; i++) {
@@ -347,23 +347,12 @@ public class PanelConsultaVentas extends JPanel
         }
         
         public void MostrarDetalleVenta(int fila){
-            /*String dni,nom,fecha,tel,email;
-            dni=tabla.getValueAt(fila,UtilidadesCliente.DNI).toString();
-            nom=tabla.getValueAt(fila,UtilidadesCliente.NOMBRE).toString();
-            tel=tabla.getValueAt(fila,UtilidadesCliente.TELEFONO).toString();
-            fecha=tabla.getValueAt(fila,UtilidadesCliente.FECHA).toString();
-            email=tabla.getValueAt(fila,UtilidadesCliente.EMAIL).toString();
-            
-            ClienteBEAN cliente=new ClienteBEAN();
-            cliente.setDni(dni);
-            cliente.setNombre(nom);
-            cliente.setCelular(tel);
-            cliente.setFechaNacimiento(fecha);
-            cliente.setEmail(email);
-            
-            VentanaModificacionCliente ventana=new VentanaModificacionCliente(cliente);
+            String ticket;
+            ticket=tabla.getValueAt(fila,UtilidadesVentas.NUMERO_TICKET).toString();
+
+            VentanaConsultaDetalle ventana=new VentanaConsultaDetalle(ticket);
             ventana.setVisible(true);
-            */
+            
         }
         
         public void EliminarRegistro(int fila){

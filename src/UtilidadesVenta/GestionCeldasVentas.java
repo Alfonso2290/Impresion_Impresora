@@ -9,17 +9,17 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.border.BevelBorder;
- 
+
 public class GestionCeldasVentas extends DefaultTableCellRenderer{
   
     private String tipo="text";
     private Font normal = new Font( "Verdana",Font.PLAIN ,12 );
     private Font bold = new Font( "Verdana",Font.BOLD ,12 );
     private JLabel label = new JLabel();
-    private ImageIcon iconoModificar = new ImageIcon(getClass().getResource("/imagenes/actualizar.png"));
     private ImageIcon iconoEliminar = new ImageIcon(getClass().getResource("/imagenes/eliminar.png"));
-
+    private JButton boton=new JButton();
     public GestionCeldasVentas(){}
 
     public GestionCeldasVentas(String tipo){
@@ -62,14 +62,25 @@ public class GestionCeldasVentas extends DefaultTableCellRenderer{
             {
                 label.setIcon(iconoEliminar);
             }
-            else if( String.valueOf(value).equals("DETALLE") )
-            {
-                label.setIcon(iconoModificar);
-            }
+            
             label.setHorizontalAlignment( JLabel.CENTER );
             label.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
             
             return label;
+        }
+        
+        if(tipo.equals("boton")){
+            
+            if(String.valueOf(value).equals("DETALLE")){
+                boton.setText("Detalle");
+                boton.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, new Color(255, 255, 255)));
+                boton.setOpaque(true);
+                boton.setBackground( new Color(65,65,65) );
+                boton.setForeground(Color.white);
+            }
+            
+            return boton;
+            
         }
 
         if( tipo.equals("numerico"))
@@ -91,5 +102,6 @@ public class GestionCeldasVentas extends DefaultTableCellRenderer{
 
         return this; 
     }
+    
 }
 

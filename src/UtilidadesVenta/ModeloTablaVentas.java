@@ -19,7 +19,7 @@ public class ModeloTablaVentas extends DefaultTableModel{
 
     public boolean isCellEditable (int row, int column)
     {
-        if (column!=UtilidadesVentas.DETALLE_VENTA && column!=UtilidadesVentas.ELIMINAR){   
+        if ( column!=UtilidadesVentas.ELIMINAR){   
             return false; 
         }else{
             return true;

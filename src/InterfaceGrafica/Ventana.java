@@ -23,6 +23,7 @@ public class Ventana extends JFrame{
         setTitle("Imprimir Cupon");
         setSize(240,400);
         setLocationRelativeTo(null);
+        setResizable(false);
         
         Color ColorFuente=new Color(232,44,12);
         Font fuenteCamposLabel=new Font("Decker", Font.BOLD, 16);
