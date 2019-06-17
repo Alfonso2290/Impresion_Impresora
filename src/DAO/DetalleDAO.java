@@ -5,6 +5,7 @@ import BEAN.DetalleBEAN;
 import java.sql.*;
 import java.util.*;
 import UTIL.ConexionBD;
+import javax.swing.JOptionPane;
 
 public class DetalleDAO {
     
@@ -52,5 +53,24 @@ public class DetalleDAO {
             System.out.println("Error");
         }
         return lista;
+    }
+    
+    public void registrarDetalleVenta(DetalleBEAN detalle){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="INSERT INTO DETALLE_VENTA VALUES(?,?,?,?)";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1, detalle.getNumTicket());
+            instruccion.setString(2, detalle.getCodProducto());
+            instruccion.setInt(3, detalle.getCantidad());
+            instruccion.setDouble(4, detalle.getMontoSubtotal());
+            instruccion.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Se ha registrado la el detalle de venta exitosamente");
+            
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null,"Error!!..No se pudo registrar el detalle de venta");
+        }
+        
     }
 }

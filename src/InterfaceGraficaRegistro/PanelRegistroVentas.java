@@ -1,8 +1,13 @@
 
 package InterfaceGraficaRegistro;
 
+import BEAN.DetalleBEAN;
 import BEAN.ProductoBEAN;
 import DAO.ProductoDAO;
+import UtilidadesDetalleVenta.GestionCeldasDetalle;
+import UtilidadesDetalleVenta.GestionEncabezadoTablaDetalle;
+import UtilidadesDetalleVenta.ModeloTablaDetalle;
+import UtilidadesDetalleVenta.UtilidadesDetalle;
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
@@ -17,12 +22,13 @@ import javax.imageio.ImageIO;
 import javax.swing.border.*;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 
 public class PanelRegistroVentas extends JPanel  
 {
     private JLabel mensaje,titulo,ticket,dni,montoTotal,igv,montoNeto,mensaje2;
     private JTextField txtNumTicket,txtDni,txtModIGV;
-    private JLabel txtMontoTotal,txtIGV,txtMontoNeto,editar,titulo2;
+    private JLabel txtMontoTotal,txtIGV,txtMontoNeto,editar,titulo2,mensaje3;
     private JButton btnGuardar,btnCancelar,btnAtras,btnFinalizar;
     private JSeparator h1,h2,h3,h4,h5;
     private DefaultTableModel modelo;
@@ -30,11 +36,15 @@ public class PanelRegistroVentas extends JPanel
     private JScrollPane scroll;
     private ArrayList<ProductoBEAN> lista;
     private DecimalFormat formato;
-    private static double montoN=0,montoT=0,igvActual=18;
-    private static ArrayList<ProductoBEAN> listaTabla=new ArrayList<ProductoBEAN>();
+    public static double montoN=0,montoT=0,igvActual=18;
+    public static ArrayList<DetalleBEAN> listaGuardar;
+    private int filasTabla;
+    private int columnasTabla;
     
     public PanelRegistroVentas()
     {
+        listaGuardar=new ArrayList<DetalleBEAN>();
+        setBorder(new EmptyBorder(5, 5, 5, 5));
         Inicio();
         txtNumTicket.requestFocus();
     }
@@ -57,59 +67,40 @@ public class PanelRegistroVentas extends JPanel
         titulo2.setFont(fuenteCamposLabel);
         titulo2.setForeground(ColorFuente);
         
-        modelo=new DefaultTableModel();
-        
+        scroll=new JScrollPane();
         tabla=new JTable();
-        scroll=new JScrollPane(tabla);
-        tabla.setBackground(ColorFuente.brighter().brighter());
-        tabla.setForeground(Color.WHITE);
-        tabla.setGridColor(ColorFuente);
-        
-        tabla.setFont(new Font("Arial",Font.BOLD,10));
-        
-        modelo.addColumn("Código");
-        modelo.addColumn("Nombre");
-        modelo.addColumn("Descripción");
-        modelo.addColumn("Precio Venta");
-        modelo.addColumn("Stock");
-        modelo.addColumn("Cantidad");
-        
-        tabla.setModel(modelo);
-        tabla.setEnabled(true);
-        
-        centrarTextoTabla();
+        tabla.setBackground(Color.WHITE);
+        tabla.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+        tabla.addMouseListener(new EventoEliminar());
+        tabla.setOpaque(false);
+        scroll.setViewportView(tabla);
 
-        capturarListaTabla();
+        mensaje3=new JLabel();
+        mensaje3.setBounds(250,70,350,50);
+        mensaje3.setFont(new Font("Arial",Font.BOLD,18));
+        mensaje3.setForeground(Color.RED);
         
-        mensaje=new JLabel();
-        mensaje.setBounds(250,150,350,50);
-        mensaje.setFont(new Font("Arial",Font.BOLD,18));
-        mensaje.setForeground(Color.RED);
+        capturarListaTabla();
         
         if(lista.size()!=0)
         {
-            for(ProductoBEAN obj:lista)
-            {
-                modelo.addRow(new Object[]{obj.getCodProducto(),obj.getNombre(),
-                obj.getDescripcion(),formato.format(obj.getPrecioVenta()),
-                obj.getCantidad(),0});
-            }
+            construirTabla();
 
-            scroll.setBounds(350,110,450,200);
+            scroll.setBounds(350,110,700,200);
             
-            mensaje.setText("");
+            mensaje3.setText("");
             
             add(scroll);
         }
         else
         {
-            mensaje.setText("<< No tienes productos actualmente >>");
+            mensaje3.setText("<< No tienes productos actualmente >>");
         }
         
-        add(mensaje);
+        add(mensaje3);
         
         titulo=new JLabel("REGISTRAR VENTA");
-        titulo.setBounds(300,10,300,30);
+        titulo.setBounds(450,10,300,30);
         titulo.setFont(fuenteTitulo);
         titulo.setForeground(ColorFuente);
         
@@ -117,6 +108,11 @@ public class PanelRegistroVentas extends JPanel
         ticket.setBounds(50,70,200,20);
         ticket.setFont(fuenteCamposLabel);
         ticket.setForeground(ColorFuente);
+        
+        mensaje=new JLabel();
+        mensaje.setBounds(210,70,120,20);
+        mensaje.setForeground(ColorFuente);
+        mensaje.setFont(fuenteMensaje);
         
         txtNumTicket=new JTextField();
         txtNumTicket.setBounds(50,95,250,20);
@@ -130,7 +126,7 @@ public class PanelRegistroVentas extends JPanel
         h1.setBackground(Color.gray);
         
         mensaje2=new JLabel();
-        mensaje2.setBounds(190,70,120,20);
+        mensaje2.setBounds(210,130,120,20);
         mensaje2.setForeground(ColorFuente);
         mensaje2.setFont(fuenteMensaje);
         
@@ -213,14 +209,15 @@ public class PanelRegistroVentas extends JPanel
         h5.setBackground(Color.gray);
         
         btnGuardar=new JButton("Guardar");
-        btnGuardar.setBounds(280,400,110,30);
+        btnGuardar.setBounds(430,400,110,30);
         btnGuardar.setFont(fuenteCamposLabel);
         btnGuardar.setBackground(null);
         btnGuardar.setForeground(ColorFuente);
         btnGuardar.addMouseListener(new ColorBotones(ColorFuente,Color.WHITE,btnGuardar));
+        btnGuardar.setEnabled(false);
         
         btnCancelar=new JButton("Cancelar");
-        btnCancelar.setBounds(405,400,120,30);
+        btnCancelar.setBounds(555,400,120,30);
         btnCancelar.setFont(fuenteCamposLabel);
         btnCancelar.setBackground(null);
         btnCancelar.setForeground(ColorFuente);
@@ -234,7 +231,7 @@ public class PanelRegistroVentas extends JPanel
         btnAtras.setFont(fuenteCamposLabel);
         
         btnFinalizar=new JButton("Finalizar");
-        btnFinalizar.setBounds(600,400,120,30);
+        btnFinalizar.setBounds(650,320,120,30);
         btnFinalizar.setFont(fuenteCamposLabel);
         btnFinalizar.setBackground(null);
         btnFinalizar.setForeground(ColorFuente);
@@ -242,7 +239,7 @@ public class PanelRegistroVentas extends JPanel
         btnFinalizar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
-                Prueba();
+                finalizarCompra();
             }
         });
         
@@ -256,7 +253,6 @@ public class PanelRegistroVentas extends JPanel
         add(txtIGV);
         add(btnGuardar);
         add(btnCancelar);
-        add(mensaje);
         add(h3);
         add(h4);
         add(h5);
@@ -271,6 +267,7 @@ public class PanelRegistroVentas extends JPanel
         add(h2);
         add(titulo);
         add(btnFinalizar);
+        add(mensaje);
     }
 
     public class EventoMouse extends MouseAdapter{
@@ -286,32 +283,17 @@ public class PanelRegistroVentas extends JPanel
         
     }
     
-    public void Prueba(){
-        
-        int m=tabla.getRowCount();
-        int n=tabla.getColumnCount();
-        for(int i=0;i<tabla.getRowCount();i++){
-            ProductoBEAN prod=new ProductoBEAN();
-            for(int j=0;j<tabla.getColumnCount();j++){
-                switch(j)
-                {
-                    case 0:prod.setCodProducto(tabla.getValueAt(i, j).toString());break;
-                    case 1:prod.setNombre(tabla.getValueAt(i, j).toString());break;
-                    case 2:prod.setDescripcion(tabla.getValueAt(i, j).toString());break;
-                    case 3:prod.setPrecioVenta(Double.parseDouble(tabla.getValueAt(i, j).toString()));break;
-                    case 4:prod.setCantidad(Integer.parseInt(tabla.getValueAt(i, j).toString()));break;
-                    case 5:prod.setCantidadComprar(Integer.parseInt(tabla.getValueAt(i, j).toString()));break;
-                }  
-            }
-            listaTabla.add(prod);
-        }
-        
-        btnFinalizar.setEnabled(false);
+    private void finalizarCompra(){
+        btnGuardar.setEnabled(true);
         tabla.setEnabled(false);
-        
-        for(ProductoBEAN p:listaTabla){
-            System.out.println(p);
+        btnFinalizar.setEnabled(false);
+        for(DetalleBEAN obj: listaGuardar){
+            montoT+=obj.getMontoSubtotal();
         }
+        montoN=montoT + (montoT*igvActual/100);
+        
+        txtMontoTotal.setText("S/." + montoT);
+        txtMontoNeto.setText("S/." + montoN);
     }
     
     public class FocusEvento extends FocusAdapter{
@@ -324,6 +306,12 @@ public class PanelRegistroVentas extends JPanel
                 txtModIGV.setVisible(false);
                 txtIGV.setVisible(true);
                 txtMontoNeto.requestFocus();
+                
+                igvActual=Double.parseDouble(txtModIGV.getText());
+                montoN=montoT + (montoT*igvActual/100);
+        
+                txtMontoTotal.setText("S/." + montoT);
+                txtMontoNeto.setText("S/." + montoN);
             }
         }
     }
@@ -391,45 +379,12 @@ public class PanelRegistroVentas extends JPanel
             return false;
     }
     
-    
-    private void centrarTextoTabla()
-    {
-        DefaultTableCellRenderer tcr = new DefaultTableCellRenderer();
-        tcr.setHorizontalAlignment(SwingConstants.CENTER);
-        
-        for(int i=0;i<tabla.getColumnCount();i++)
-            tabla.getColumnModel().getColumn(i).setCellRenderer(tcr);
-    }
-    
     private void capturarListaTabla()
     {
         ProductoDAO productoDAO=new ProductoDAO();
         lista=productoDAO.getListaProductosDisponibles();
     }
-    //para disminuir stock
-    private void llenarTabla(String msj)
-    {
-        if(lista.size()!=0)
-        {
-            scroll.setVisible(true);
-            limpiarTabla();
-            for(ProductoBEAN obj:lista)
-            {
-                modelo.addRow(new Object[]{obj.getCodProducto(),obj.getNombre(),
-                obj.getDescripcion(),formato.format(obj.getPrecioVenta()),
-                obj.getCantidad(),obj.getEstado()});
-            }
-            mensaje.setBounds(250,150,350,50);
-            mensaje.setText("");
-        }
-        else
-        {
-            scroll.setVisible(false);
-            mensaje.setBounds(180,150,470,50);
-            mensaje.setText(msj);
-        }
-    }
-    
+
     public void limpiarTabla()
     {
         for(int i=0;i<tabla.getRowCount();i++)
@@ -465,6 +420,170 @@ public class PanelRegistroVentas extends JPanel
             this.boton.setForeground(colorFondo);
             
         }
+    }
+
+    public JLabel getMensaje() {
+        return mensaje;
+    }
+
+    public JLabel getMensaje2() {
+        return mensaje2;
+    }
+    
+    public JTextField getTxtNumTicket() {
+        return txtNumTicket;
+    }
+
+    public JTextField getTxtDni() {
+        return txtDni;
+    }
+
+    public JButton getBtnGuardar() {
+        return btnGuardar;
+    }
+
+    public JButton getBtnCancelar() {
+        return btnCancelar;
+    }
+
+    public JButton getBtnAtras() {
+        return btnAtras;
+    }
+
+    public static ArrayList<DetalleBEAN> getListaGuardar() {
+        return listaGuardar;
+    }
+    
+    public static double getMontoN() {
+        return montoN;
+    }
+
+    public static double getMontoT() {
+        return montoT;
+    }
+
+    public static double getIgvActual() {
+        return igvActual;
+    }
+    
+    
+    
+    private void construirTabla() {
+        
+        ArrayList<String> titulosList=new ArrayList<>();
+        
+        titulosList.add(" ");
+        titulosList.add("Código");
+        titulosList.add("Nombre");
+        titulosList.add("Descripción");
+        titulosList.add("Precio Venta");
+        titulosList.add("Stock");
+        titulosList.add("Cantidad");
+
+        String titulos[] = new String[titulosList.size()];
+        for (int i = 0; i < titulos.length; i++) {
+            titulos[i]=titulosList.get(i);
+        }
+    
+        Object[][] data =obtenerMatrizDatos(titulosList);
+        construirTabla(titulos,data);
+    }
+
+    private Object[][] obtenerMatrizDatos(ArrayList<String> titulosList) {
+
+        String informacion[][] = new String[lista.size()][titulosList.size()];
+
+        for (int x = 0; x < informacion.length; x++) {
+
+            informacion[x][UtilidadesDetalle.CARRITO] = "CARRITO";
+            informacion[x][UtilidadesDetalle.CODIGO] = lista.get(x).getCodProducto()+ "";
+            informacion[x][UtilidadesDetalle.NOMBRE] = lista.get(x).getNombre()+ "";
+            informacion[x][UtilidadesDetalle.DESCRIPCION] = lista.get(x).getDescripcion()+ "";
+            informacion[x][UtilidadesDetalle.PRECIO_VENTA] = lista.get(x).getPrecioVenta()+ "";
+            informacion[x][UtilidadesDetalle.STOCK] = lista.get(x).getCantidad() + "";
+            informacion[x][UtilidadesDetalle.CANTIDAD] = lista.get(x).getCantidadComprar() + "";
+        }
+
+        return informacion;
+    }
+
+    private void construirTabla(String[] titulos, Object[][] data) {
+      
+        modelo=new ModeloTablaDetalle(data, titulos);
+        tabla.setModel(modelo);
+        
+        filasTabla=tabla.getRowCount();
+        columnasTabla=tabla.getColumnCount();
+
+        tabla.getColumnModel().getColumn(UtilidadesDetalle.CARRITO).setCellRenderer(new GestionCeldasDetalle("icono"));
+        tabla.getColumnModel().getColumn(UtilidadesDetalle.CODIGO).setCellRenderer(new GestionCeldasDetalle("texto"));
+        tabla.getColumnModel().getColumn(UtilidadesDetalle.NOMBRE).setCellRenderer(new GestionCeldasDetalle("texto"));
+        tabla.getColumnModel().getColumn(UtilidadesDetalle.DESCRIPCION).setCellRenderer(new GestionCeldasDetalle("texto"));
+        tabla.getColumnModel().getColumn(UtilidadesDetalle.PRECIO_VENTA).setCellRenderer(new GestionCeldasDetalle("numerico"));
+        tabla.getColumnModel().getColumn(UtilidadesDetalle.STOCK).setCellRenderer(new GestionCeldasDetalle("numerico"));
+        tabla.getColumnModel().getColumn(UtilidadesDetalle.CANTIDAD).setCellRenderer(new GestionCeldasDetalle("numerico"));
+
+        tabla.getTableHeader().setReorderingAllowed(false);
+        tabla.setRowHeight(25);
+        tabla.setGridColor(new java.awt.Color(0, 0, 0)); 
+        
+        tabla.getColumnModel().getColumn(UtilidadesDetalle.CARRITO).setPreferredWidth(30);
+        tabla.getColumnModel().getColumn(UtilidadesDetalle.CODIGO).setPreferredWidth(130);
+        tabla.getColumnModel().getColumn(UtilidadesDetalle.NOMBRE).setPreferredWidth(200);
+        tabla.getColumnModel().getColumn(UtilidadesDetalle.DESCRIPCION).setPreferredWidth(350);
+        tabla.getColumnModel().getColumn(UtilidadesDetalle.PRECIO_VENTA).setPreferredWidth(130);
+        tabla.getColumnModel().getColumn(UtilidadesDetalle.STOCK).setPreferredWidth(130);
+        tabla.getColumnModel().getColumn(UtilidadesDetalle.CANTIDAD).setPreferredWidth(130);
+
+        JTableHeader jtableHeader = tabla.getTableHeader();
+        jtableHeader.setDefaultRenderer(new GestionEncabezadoTablaDetalle());
+        tabla.setTableHeader(jtableHeader);
+
+        scroll.setViewportView(tabla);
+     }
+    
+    public class EventoEliminar extends MouseAdapter{
+        
+        public void mouseClicked(MouseEvent e){
+            int fila=tabla.rowAtPoint(e.getPoint());
+            int columna=tabla.columnAtPoint(e.getPoint());
+            if(columna==UtilidadesDetalle.CARRITO){
+                SeleccionProducto(fila);
+            }
+        }
+        
+        public void SeleccionProducto(int fila){
+            
+            if(btnFinalizar.isEnabled()){
+                double precioUnitario,subtotal;
+                int stock,nuevo_stock;
+                String codProducto;
+                stock=Integer.parseInt(tabla.getValueAt(fila, UtilidadesDetalle.STOCK).toString());
+                int cantidad=Integer.parseInt(JOptionPane.showInputDialog("Ingrese la cantidad a comprar"));
+
+                if(stock>=cantidad){
+                    precioUnitario=Double.parseDouble(tabla.getValueAt(fila, UtilidadesDetalle.PRECIO_VENTA).toString());
+                    subtotal=cantidad*precioUnitario;
+                    codProducto=tabla.getValueAt(fila, UtilidadesDetalle.CODIGO).toString();
+                    nuevo_stock=stock-cantidad;
+
+                    DetalleBEAN bean=new DetalleBEAN();
+                    bean.setCantidad(cantidad);
+                    bean.setMontoSubtotal(subtotal);
+                    bean.setCodProducto(codProducto);
+                    bean.setStock(nuevo_stock);
+
+                    listaGuardar.add(bean);
+
+                    tabla.setValueAt(nuevo_stock + "", fila, UtilidadesDetalle.STOCK);
+                    tabla.setValueAt(cantidad + "", fila , UtilidadesDetalle.CANTIDAD);
+
+                }else{
+                    JOptionPane.showMessageDialog(null, "La cantidad solicitada sobrepasa el Stock");
+                }
+            }
+        }
+        
     }
 }
 

@@ -111,6 +111,70 @@ public class VentaDAO {
             JOptionPane.showMessageDialog(null,"Error!!..No se pudo eliminar el registro de la venta");
         }
     }
+    
+    public int verificarNumeroTicket(VentaBEAN venta)
+    {
+        int i=0;
+        try 
+        {
+            conexion=new ConexionBD();
+            sql="SELECT COUNT(*) ";
+            sql+="FROM VENTA  ";
+            sql+="WHERE NUM_TICKET=?";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1, venta.getNumTicket());
+            tabla=instruccion.executeQuery();
+            
+            if(tabla.next())
+                i=tabla.getInt(1);
+            
+        } 
+        catch (Exception e) {
+        }
+        
+        return i;
+    }
+    
+    public String getFechaRegistroActual()
+    {
+        String fecha="";
+        try 
+        {
+            conexion=new ConexionBD();
+            sql="SELECT GETDATE() ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            tabla=instruccion.executeQuery();
+            
+            if(tabla.next())
+                fecha=tabla.getString(1);
+            
+        } 
+        catch (Exception e) {
+        }
+        
+        return fecha;
+    }
+    
+    public void registrarVenta(VentaBEAN venta){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="INSERT INTO VENTA VALUES(?,?,?,?,?,?)";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1, venta.getNumTicket());
+            instruccion.setString(2, venta.getDni());
+            instruccion.setString(3, venta.getFecha());
+            instruccion.setDouble(4, venta.getMontoTotal());
+            instruccion.setDouble(5, venta.getIgv());
+            instruccion.setDouble(6, venta.getMontoNeto());
+            instruccion.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Se ha registrado la venta exitosamente");
+            
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null,"Error!!..No se pudo registrar la venta");
+        }
+        
+    }
 }
 
 

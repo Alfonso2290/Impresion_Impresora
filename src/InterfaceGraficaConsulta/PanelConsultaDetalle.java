@@ -45,7 +45,7 @@ public class PanelConsultaDetalle extends JPanel{
             g2.drawString(obj.getNombreProducto(),70,y);
             g2.drawString(obj.getCantidad() + "",135,y);
             g2.drawString("S/." + formato.format(obj.getPrecioVenta()),160,y);
-            g2.drawString("S/." + formato.format(obj.getMontoSubtotal()),195,y);
+            g2.drawString("S/." + formato.format(obj.getMontoSubtotal()),190,y);
                             
             montoTotal=obj.getMontoTotal();
             montoNeto=obj.getMontoNeto();
@@ -55,13 +55,13 @@ public class PanelConsultaDetalle extends JPanel{
         //g2.drawLine(10,y+=15,225,y);
         g2.drawString("------------------------------------------------------", 10, y+=5);
         g2.drawString("Base imponible:",75,y+=15);
-        g2.drawString("S/." + formato.format(montoTotal), 195,y );
+        g2.drawString("S/." + formato.format(montoTotal), 190,y );
         g2.drawString("IGV:",75,y+=15);
-        g2.drawString(formato.format(IGV) + "%",195,y);
+        g2.drawString(formato.format(IGV) + "%",190,y);
         //g2.drawLine(10,y+=15,225,y);
         g2.drawString("------------------------------------------------------", 10, y+=15);
         g2.drawString("TOTAL:",75,y+=15);
-        g2.drawString("S/." + formato.format(montoNeto),195,y);
+        g2.drawString("S/." + formato.format(montoNeto),185,y);
     }
     
     private void cargarLista(){

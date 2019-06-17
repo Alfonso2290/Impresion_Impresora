@@ -361,4 +361,52 @@ public class ProductoDAO {
         }
         return imagen;
     }
+    
+    public ProductoBEAN getProductoSeleccion(ProductoBEAN prod){
+        ProductoBEAN producto=null;
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT * FROM PRODUCTO ";
+            sql+="WHERE COD_PRODUCTO=? ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1, prod.getCodProducto());
+            tabla=instruccion.executeQuery();
+            
+            while(tabla.next()){
+                producto=new ProductoBEAN();
+                producto.setCodProducto(tabla.getString(1));
+                producto.setNombre(tabla.getString(2));
+                producto.setDescripcion(tabla.getString(3));
+                producto.setPrecioVenta(tabla.getDouble(4));
+                producto.setCantidad(tabla.getInt(5));
+                producto.setEstado(tabla.getInt(6));
+                producto.setImagen(tabla.getBytes(7));
+ 
+            }
+            
+            
+        }catch(Exception ex){
+            System.out.println("Error");
+        }
+        
+        return producto;
+    }
+    
+    public void modificarStockProducto(ProductoBEAN producto){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="UPDATE PRODUCTO SET CANTIDAD_STOCK=? ";
+            sql+="WHERE COD_PRODUCTO=? ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setInt(1, producto.getCantidad());
+            instruccion.setString(2, producto.getCodProducto());
+            instruccion.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Se ha actualizado correctamente el stock del producto");
+            
+        }catch(Exception e){
+            JOptionPane.showMessageDialog(null,"Error!!..No se pudo actualizar el stock del producto");
+        }
+        
+    }
 }

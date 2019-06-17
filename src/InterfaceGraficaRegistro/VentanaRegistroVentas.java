@@ -6,17 +6,20 @@ import DAO.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 import javax.swing.*;
 
-public class VentanaRegistroVentas extends JFrame //implements ActionListener,FocusListener
+public class VentanaRegistroVentas extends JFrame implements ActionListener,FocusListener
 {
     private PanelRegistroVentas miPanel;
+    private DecimalFormat formato;
     
     public VentanaRegistroVentas()
     {
         setTitle("Registrar Venta");
         Dimension tamañoPantalla=Toolkit.getDefaultToolkit().getScreenSize();
-        setSize(tamañoPantalla.width*3/5,470);
+        setSize(tamañoPantalla.width*4/5,470);
         setLocationRelativeTo(null);
         setResizable(false);
         Inicio();
@@ -24,21 +27,16 @@ public class VentanaRegistroVentas extends JFrame //implements ActionListener,Fo
     
     private void Inicio()
     {
+        formato=new DecimalFormat("##.##");
         miPanel=new PanelRegistroVentas();
         miPanel.setBackground(Color.LIGHT_GRAY.brighter());
         
-        /*miPanel.getBtnGuardar().addActionListener(this);
+        miPanel.getBtnGuardar().addActionListener(this);
         miPanel.getBtnCancelar().addActionListener(this);
-        miPanel.getTxtCod().addFocusListener(this);
+        miPanel.getBtnAtras().addActionListener(this);
+        miPanel.getTxtNumTicket().addFocusListener(this);
+        miPanel.getTxtDni().addFocusListener(this);
         
-        miPanel.getBtnCancelar().addKeyListener(new cambioCampo());
-        miPanel.getBtnGuardar().addKeyListener(new cambioCampo());
-        miPanel.getTxtCod().addKeyListener(new cambioCampo());
-        miPanel.getTxtDes().addKeyListener(new cambioCampo());
-        miPanel.getTxtPv().addKeyListener(new cambioCampo());
-        miPanel.getTxtNom().addKeyListener(new cambioCampo());
-        miPanel.getTxtCan().addKeyListener(new cambioCampo());
-        miPanel.getTxtEst().addKeyListener(new cambioCampo());
         
         miPanel.getBtnAtras().addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
@@ -47,11 +45,11 @@ public class VentanaRegistroVentas extends JFrame //implements ActionListener,Fo
                 ventana.setVisible(true);
                 ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             }
-        });*/
+        });
         
         add(miPanel);
     }
-    /*
+    
     @Override
     public void actionPerformed(ActionEvent e)
     {
@@ -64,82 +62,88 @@ public class VentanaRegistroVentas extends JFrame //implements ActionListener,Fo
         {
             eventoGuardar();
         }
+        
     }
     
     private void eventoGuardar()
     {
-        File ruta = new File(miPanel.getRutaImagen());
-        String nom,cod,des,can,pv,est;
-        cod=miPanel.getTxtCod().getText();
-        nom=miPanel.getTxtNom().getText();
-        des=miPanel.getTxtDes().getText();
-        pv=miPanel.getTxtPv().getText();
-        can=miPanel.getTxtCan().getText();
-        est=miPanel.getTxtEst().getText();
-
-        if(cod.equals("") || cod.length()<8)
-        {
-            JOptionPane.showMessageDialog(null, "Ustede debe llenar el campo Código");
-            miPanel.getTxtCod().requestFocus();
-        }
-        else if(nom.equals(""))
-        {
-            JOptionPane.showMessageDialog(null, "Ustede debe llenar el campo Nombre");
-            miPanel.getTxtNom().requestFocus();
-        }
-        else if(des.equals(""))
-        {
-            JOptionPane.showMessageDialog(null, "Ustede debe llenar el campo Descripción");
-            miPanel.getTxtDes().requestFocus();
-        }
-        else if(pv.equals(""))
-        {
-            JOptionPane.showMessageDialog(null, "Ustede debe llenar el campo Precio de Venta");
-            miPanel.getTxtPv().requestFocus();
-        }
-        else if(can.equals(""))
-        {
-            JOptionPane.showMessageDialog(null, "Ustede debe llenar el campo Cantidad Stock");
-            miPanel.getTxtCan().requestFocus();
-        }
-        else if(est.equals(""))
-        {
-            JOptionPane.showMessageDialog(null, "Ustede debe llenar el campo Estado");
-            miPanel.getTxtEst().requestFocus();
-        }
-        
-        else
-        {
-            ProductoBEAN producto=new ProductoBEAN();
-            producto.setCodProducto(cod);
-            producto.setNombre(nom);
-            producto.setDescripcion(des);
-            producto.setPrecioVenta(Double.parseDouble(pv));
-            producto.setCantidad(Integer.parseInt(can));
-            producto.setEstado(Integer.parseInt(est));
+        String dni,ticket,fecha;
+        double montoTotal,igv,montoNeto;
+        ArrayList<DetalleBEAN> lista=miPanel.listaGuardar;
+        if(lista.size()!=0){
+            dni=miPanel.getTxtDni().getText();
+            ticket=miPanel.getTxtNumTicket().getText();
+            montoTotal=miPanel.montoT;
+            igv=miPanel.igvActual/100;
+            montoNeto=miPanel.montoN;
             
-            try{
-                byte[] icono = new byte[(int) ruta.length()];
-                InputStream input = new FileInputStream(ruta);
-                input.read(icono);
-                producto.setImagen(icono);
-            }catch(Exception ex){
-                producto.setImagen(null);
-            }
-            
-            ProductoDAO productoDAO=new ProductoDAO();
+            VentaDAO dao=new VentaDAO();
+            fecha=dao.getFechaRegistroActual();
 
-            int verificarCodigo=productoDAO.registrarProducto(producto);
-
-            if(verificarCodigo==0)
+            if(ticket.equals("") || ticket.length()<10)
             {
-                JOptionPane.showMessageDialog(null, "Error!!..Verifique los datos ingresados");
-                miPanel.getTxtCod().requestFocus();
-            }else{
-                JOptionPane.showMessageDialog(null,"El producto ha sido registrado correctamente");
-                miPanel.limpiarCampos();
+                JOptionPane.showMessageDialog(null, "Ustede debe llenar el campo Número de Ticket");
+                miPanel.getTxtNumTicket().requestFocus();
             }
-            
+            else if(miPanel.getMensaje().getText().equals("")==false)
+            {
+                JOptionPane.showMessageDialog(null, "El Número de Ticket ingresado ya está registrado");
+                miPanel.getTxtNumTicket().requestFocus();
+            }
+            else if(dni.equals("") || dni.length()<8)
+            {
+                JOptionPane.showMessageDialog(null, "Ustede debe llenar el campo DNI");
+                miPanel.getTxtDni().requestFocus();
+            }
+            else if(miPanel.getMensaje2().getText().equals(""))
+            {
+                JOptionPane.showMessageDialog(null, "El DNI ingresado es invalido");
+                miPanel.getTxtDni().requestFocus();
+            }
+            else
+            {
+                VentaBEAN venta=new VentaBEAN();
+                venta.setDni(dni);
+                venta.setNumTicket(ticket);
+                venta.setFecha(fecha);
+                venta.setMontoNeto(montoNeto);
+                venta.setMontoTotal(montoTotal);
+                venta.setIgv(igv);
+                
+                VentaDAO ventaDAO=new VentaDAO();
+                ventaDAO.registrarVenta(venta);
+                
+                for(DetalleBEAN obj: lista){
+                    DetalleBEAN det=new DetalleBEAN();
+                    det.setNumTicket(ticket);
+                    det.setCodProducto(obj.getCodProducto());
+                    det.setCantidad(obj.getCantidad());
+                    det.setMontoSubtotal(obj.getMontoSubtotal());
+                    
+                    DetalleDAO detDAO=new DetalleDAO();
+                    detDAO.registrarDetalleVenta(det);
+                }
+                
+                for(DetalleBEAN obj: lista){
+                    ProductoBEAN producto=new ProductoBEAN();
+                    producto.setCodProducto(obj.getCodProducto());
+                    producto.setCantidad(obj.getStock());
+                    
+                    ProductoDAO proDAO=new ProductoDAO();
+                    proDAO.modificarStockProducto(producto);
+                }
+                
+                miPanel.montoT=0;
+                miPanel.igvActual=18;
+                miPanel.montoN=0;
+                dispose();
+                VentanaRegistros ventana=new VentanaRegistros();
+                ventana.setVisible(true);
+                ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            }
+        }else{
+            JOptionPane.showMessageDialog(null, "Usted debe realizar alguna compra");
+            miPanel.getTxtNumTicket().requestFocus();
         }
     }
 
@@ -147,23 +151,41 @@ public class VentanaRegistroVentas extends JFrame //implements ActionListener,Fo
     @Override
     public void focusGained(FocusEvent e)
     {
-        miPanel.getMensaje().setText("");
+        if(e.getSource()==miPanel.getTxtNumTicket())
+            miPanel.getMensaje().setText("");
+        if(e.getSource()==miPanel.getTxtDni())
+            miPanel.getMensaje2().setText("");
     }
     
     @Override
     public void focusLost(FocusEvent e)
     {
-        if(e.getSource()==miPanel.getTxtCod())
+
+        if(e.getSource()==miPanel.getTxtNumTicket())
         {
-            String cod=miPanel.getTxtCod().getText();
-            ProductoBEAN producto=new ProductoBEAN();
-            producto.setCodProducto(cod);
+            String ticket=miPanel.getTxtNumTicket().getText();
+            VentaBEAN venta=new VentaBEAN();
+            venta.setNumTicket(ticket);
             
-            ProductoDAO productoDAO=new ProductoDAO();
-            int verificacion=productoDAO.verificarProducto(producto);
-            if(verificacion>0 && cod.compareTo("")!=0 )
+            VentaDAO ventaDAO=new VentaDAO();
+            int verificacion=ventaDAO.verificarNumeroTicket(venta);
+            if(verificacion>0 && ticket.compareTo("")!=0 )
             {
-                miPanel.getMensaje().setText("Producto Registrado");
+                miPanel.getMensaje().setText("Ticket Registrado");
+            }
+        }
+        
+        if(e.getSource()==miPanel.getTxtDni())
+        {
+            String dni=miPanel.getTxtDni().getText();
+            ClienteBEAN cliente=new ClienteBEAN();
+            cliente.setDni(dni);
+            
+            ClienteDAO clienteDAO=new ClienteDAO();
+            int verificacion=clienteDAO.verificarDniVenta(cliente);
+            if(verificacion>0 && dni.compareTo("")!=0 )
+            {
+                miPanel.getMensaje2().setText("DNI Válido");
             }
         }
     }
@@ -180,60 +202,5 @@ public class VentanaRegistroVentas extends JFrame //implements ActionListener,Fo
         }
     }
     
-    private class cambioCampo extends KeyAdapter
-    {
-        @Override
-        public void keyPressed(KeyEvent e)
-        {
-            if(e.getSource()==miPanel.getTxtCod())
-            {
-                if(e.VK_ENTER==e.getKeyCode())
-                    miPanel.getTxtCod().nextFocus();
-            }
-            
-            if(e.getSource()==miPanel.getTxtNom())
-            {
-                if(e.VK_ENTER==e.getKeyCode())
-                    miPanel.getTxtNom().nextFocus();
-            }
-            
-            if(e.getSource()==miPanel.getTxtDes())
-            {
-                if(e.VK_ENTER==e.getKeyCode())
-                    miPanel.getTxtDes().nextFocus();
-            }
-            
-            if(e.getSource()==miPanel.getTxtPv())
-            {
-                if(e.VK_ENTER==e.getKeyCode())
-                    miPanel.getTxtPv().nextFocus();
-            }
-            
-            if(e.getSource()==miPanel.getTxtCan())
-            {
-                if(e.VK_ENTER==e.getKeyCode())
-                    miPanel.getTxtCan().nextFocus();
-            }
-            
-            if(e.getSource()==miPanel.getTxtEst())
-            {
-                if(e.VK_ENTER==e.getKeyCode())
-                    eventoGuardar(); 
-            }
-            
-            if(e.getSource()==miPanel.getBtnGuardar())
-            {
-                if(e.VK_ENTER==e.getKeyCode())
-                    eventoGuardar();
-            }
-            
-            if(e.getSource()==miPanel.getBtnCancelar())
-            {
-                if(e.VK_ENTER==e.getKeyCode())
-                   eventoCancelar();
-            }
-                
-        }
-    }*/
 }
 

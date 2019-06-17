@@ -172,4 +172,27 @@ public class ClienteDAO {
         
         return i;
     }
+    
+    public int verificarDniVenta(ClienteBEAN cliente)
+    {
+        int i=0;
+        try 
+        {
+            conexion=new ConexionBD();
+            sql="SELECT COUNT(*) ";
+            sql+="FROM CLIENTE  ";
+            sql+="WHERE DNI=?";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1, cliente.getDni());
+            tabla=instruccion.executeQuery();
+            
+            if(tabla.next())
+                i=tabla.getInt(1);
+            
+        } 
+        catch (Exception e) {
+        }
+        
+        return i;
+    }
 }
