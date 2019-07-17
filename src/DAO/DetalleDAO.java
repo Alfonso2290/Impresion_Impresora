@@ -73,4 +73,343 @@ public class DetalleDAO {
         }
         
     }
+    
+    public ArrayList<DetalleBEAN> getListaNombreProductos(){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT DISTINCT NOMBRE FROM PRODUCTO ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<DetalleBEAN>();
+            
+            while(tabla.next()){
+                DetalleBEAN producto=new DetalleBEAN();
+                producto.setNombreProducto(tabla.getString(1));
+                
+                lista.add(producto);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
+    
+    public ArrayList<DetalleBEAN> getListaDetalleVentas(){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT DISTINCT D.NUM_TICKET,D.COD_PRODUCTO,P.NOMBRE,P.CANTIDAD_STOCK, ";
+            sql+="D.CANTIDAD,P.PRECIO_VENTA,D.MONTO_SUBTOTAL,V.FECHA ";
+            sql+="FROM VENTA V INNER JOIN DETALLE_VENTA D ";
+            sql+="ON D.NUM_TICKET=V.NUM_TICKET ";
+            sql+="INNER JOIN PRODUCTO P ";
+            sql+="ON P.COD_PRODUCTO=D.COD_PRODUCTO ";
+            sql+="ORDER BY P.NOMBRE ASC ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<DetalleBEAN>();
+            
+            while(tabla.next()){
+                DetalleBEAN detalle=new DetalleBEAN();
+                detalle.setNumTicket(tabla.getString(1));
+                detalle.setCodProducto(tabla.getString(2));
+                detalle.setNombreProducto(tabla.getString(3));
+                detalle.setStock(tabla.getInt(4));
+                detalle.setCantidad(tabla.getInt(5));
+                detalle.setPrecioVenta(tabla.getDouble(6));
+                detalle.setMontoSubtotal(tabla.getDouble(7));
+                detalle.setFechaRegistro(tabla.getString(8));
+                
+                lista.add(detalle);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
+    
+    public ArrayList<DetalleBEAN> getListaDetalleVentasFiltroNombreProducto(DetalleBEAN det){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT DISTINCT D.NUM_TICKET,D.COD_PRODUCTO,P.NOMBRE,P.CANTIDAD_STOCK, ";
+            sql+="D.CANTIDAD,P.PRECIO_VENTA,D.MONTO_SUBTOTAL,V.FECHA ";
+            sql+="FROM VENTA V INNER JOIN DETALLE_VENTA D ";
+            sql+="ON D.NUM_TICKET=V.NUM_TICKET ";
+            sql+="INNER JOIN PRODUCTO P ";
+            sql+="ON P.COD_PRODUCTO=D.COD_PRODUCTO ";
+            sql+="WHERE P.NOMBRE=? ";
+            sql+="ORDER BY P.NOMBRE ASC ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1,det.getNombreProducto());
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<DetalleBEAN>();
+            
+            while(tabla.next()){
+                DetalleBEAN detalle=new DetalleBEAN();
+                detalle.setNumTicket(tabla.getString(1));
+                detalle.setCodProducto(tabla.getString(2));
+                detalle.setNombreProducto(tabla.getString(3));
+                detalle.setStock(tabla.getInt(4));
+                detalle.setCantidad(tabla.getInt(5));
+                detalle.setPrecioVenta(tabla.getDouble(6));
+                detalle.setMontoSubtotal(tabla.getDouble(7));
+                detalle.setFechaRegistro(tabla.getString(8));
+                
+                lista.add(detalle);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
+    
+    public ArrayList<DetalleBEAN> getListaDetalleVentasFiltroFechaInicio(DetalleBEAN det){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT DISTINCT D.NUM_TICKET,D.COD_PRODUCTO,P.NOMBRE,P.CANTIDAD_STOCK, ";
+            sql+="D.CANTIDAD,P.PRECIO_VENTA,D.MONTO_SUBTOTAL,V.FECHA ";
+            sql+="FROM VENTA V INNER JOIN DETALLE_VENTA D ";
+            sql+="ON D.NUM_TICKET=V.NUM_TICKET ";
+            sql+="INNER JOIN PRODUCTO P ";
+            sql+="ON P.COD_PRODUCTO=D.COD_PRODUCTO ";
+            sql+="WHERE V.FECHA>=? ";
+            sql+="ORDER BY P.NOMBRE ASC ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1,det.getFechaInicio());
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<DetalleBEAN>();
+            
+            while(tabla.next()){
+                DetalleBEAN detalle=new DetalleBEAN();
+                detalle.setNumTicket(tabla.getString(1));
+                detalle.setCodProducto(tabla.getString(2));
+                detalle.setNombreProducto(tabla.getString(3));
+                detalle.setStock(tabla.getInt(4));
+                detalle.setCantidad(tabla.getInt(5));
+                detalle.setPrecioVenta(tabla.getDouble(6));
+                detalle.setMontoSubtotal(tabla.getDouble(7));
+                detalle.setFechaRegistro(tabla.getString(8));
+                
+                lista.add(detalle);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
+    
+    public ArrayList<DetalleBEAN> getListaDetalleVentasFiltroFechaFinal(DetalleBEAN det){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT DISTINCT D.NUM_TICKET,D.COD_PRODUCTO,P.NOMBRE,P.CANTIDAD_STOCK, ";
+            sql+="D.CANTIDAD,P.PRECIO_VENTA,D.MONTO_SUBTOTAL,V.FECHA ";
+            sql+="FROM VENTA V INNER JOIN DETALLE_VENTA D ";
+            sql+="ON D.NUM_TICKET=V.NUM_TICKET ";
+            sql+="INNER JOIN PRODUCTO P ";
+            sql+="ON P.COD_PRODUCTO=D.COD_PRODUCTO ";
+            sql+="WHERE V.FECHA<=? ";
+            sql+="ORDER BY P.NOMBRE ASC ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1,det.getFechaFinal());
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<DetalleBEAN>();
+            
+            while(tabla.next()){
+                DetalleBEAN detalle=new DetalleBEAN();
+                detalle.setNumTicket(tabla.getString(1));
+                detalle.setCodProducto(tabla.getString(2));
+                detalle.setNombreProducto(tabla.getString(3));
+                detalle.setStock(tabla.getInt(4));
+                detalle.setCantidad(tabla.getInt(5));
+                detalle.setPrecioVenta(tabla.getDouble(6));
+                detalle.setMontoSubtotal(tabla.getDouble(7));
+                detalle.setFechaRegistro(tabla.getString(8));
+                
+                lista.add(detalle);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
+    
+    public ArrayList<DetalleBEAN> getListaDetalleVentasFiltroNombreProductoFechaInicio(DetalleBEAN det){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT DISTINCT D.NUM_TICKET,D.COD_PRODUCTO,P.NOMBRE,P.CANTIDAD_STOCK, ";
+            sql+="D.CANTIDAD,P.PRECIO_VENTA,D.MONTO_SUBTOTAL,V.FECHA ";
+            sql+="FROM VENTA V INNER JOIN DETALLE_VENTA D ";
+            sql+="ON D.NUM_TICKET=V.NUM_TICKET ";
+            sql+="INNER JOIN PRODUCTO P ";
+            sql+="ON P.COD_PRODUCTO=D.COD_PRODUCTO ";
+            sql+="WHERE V.FECHA>=? AND P.NOMBRE=? ";
+            sql+="ORDER BY P.NOMBRE ASC ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1,det.getFechaInicio());
+            instruccion.setString(2, det.getNombreProducto());
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<DetalleBEAN>();
+            
+            while(tabla.next()){
+                DetalleBEAN detalle=new DetalleBEAN();
+                detalle.setNumTicket(tabla.getString(1));
+                detalle.setCodProducto(tabla.getString(2));
+                detalle.setNombreProducto(tabla.getString(3));
+                detalle.setStock(tabla.getInt(4));
+                detalle.setCantidad(tabla.getInt(5));
+                detalle.setPrecioVenta(tabla.getDouble(6));
+                detalle.setMontoSubtotal(tabla.getDouble(7));
+                detalle.setFechaRegistro(tabla.getString(8));
+                
+                lista.add(detalle);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
+    
+    public ArrayList<DetalleBEAN> getListaDetalleVentasFiltroNombreProductoFechaFinal(DetalleBEAN det){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT DISTINCT D.NUM_TICKET,D.COD_PRODUCTO,P.NOMBRE,P.CANTIDAD_STOCK, ";
+            sql+="D.CANTIDAD,P.PRECIO_VENTA,D.MONTO_SUBTOTAL,V.FECHA ";
+            sql+="FROM VENTA V INNER JOIN DETALLE_VENTA D ";
+            sql+="ON D.NUM_TICKET=V.NUM_TICKET ";
+            sql+="INNER JOIN PRODUCTO P ";
+            sql+="ON P.COD_PRODUCTO=D.COD_PRODUCTO ";
+            sql+="WHERE V.FECHA<=? AND P.NOMBRE=? ";
+            sql+="ORDER BY P.NOMBRE ASC ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1,det.getFechaFinal());
+            instruccion.setString(2, det.getNombreProducto());
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<DetalleBEAN>();
+            
+            while(tabla.next()){
+                DetalleBEAN detalle=new DetalleBEAN();
+                detalle.setNumTicket(tabla.getString(1));
+                detalle.setCodProducto(tabla.getString(2));
+                detalle.setNombreProducto(tabla.getString(3));
+                detalle.setStock(tabla.getInt(4));
+                detalle.setCantidad(tabla.getInt(5));
+                detalle.setPrecioVenta(tabla.getDouble(6));
+                detalle.setMontoSubtotal(tabla.getDouble(7));
+                detalle.setFechaRegistro(tabla.getString(8));
+                
+                lista.add(detalle);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
+    
+    public ArrayList<DetalleBEAN> getListaDetalleVentasFiltroFechaInicioFechaFinal(DetalleBEAN det){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT DISTINCT D.NUM_TICKET,D.COD_PRODUCTO,P.NOMBRE,P.CANTIDAD_STOCK, ";
+            sql+="D.CANTIDAD,P.PRECIO_VENTA,D.MONTO_SUBTOTAL,V.FECHA ";
+            sql+="FROM VENTA V INNER JOIN DETALLE_VENTA D ";
+            sql+="ON D.NUM_TICKET=V.NUM_TICKET ";
+            sql+="INNER JOIN PRODUCTO P ";
+            sql+="ON P.COD_PRODUCTO=D.COD_PRODUCTO ";
+            sql+="WHERE V.FECHA BETWEEN ? AND ? ";
+            sql+="ORDER BY P.NOMBRE ASC ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1,det.getFechaInicio());
+            instruccion.setString(2, det.getFechaFinal());
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<DetalleBEAN>();
+            
+            while(tabla.next()){
+                DetalleBEAN detalle=new DetalleBEAN();
+                detalle.setNumTicket(tabla.getString(1));
+                detalle.setCodProducto(tabla.getString(2));
+                detalle.setNombreProducto(tabla.getString(3));
+                detalle.setStock(tabla.getInt(4));
+                detalle.setCantidad(tabla.getInt(5));
+                detalle.setPrecioVenta(tabla.getDouble(6));
+                detalle.setMontoSubtotal(tabla.getDouble(7));
+                detalle.setFechaRegistro(tabla.getString(8));
+                
+                lista.add(detalle);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
+    
+    public ArrayList<DetalleBEAN> getListaDetalleVentasFiltroNombreProductoFechaInicioFechaFinal(DetalleBEAN det){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT DISTINCT D.NUM_TICKET,D.COD_PRODUCTO,P.NOMBRE,P.CANTIDAD_STOCK, ";
+            sql+="D.CANTIDAD,P.PRECIO_VENTA,D.MONTO_SUBTOTAL,V.FECHA ";
+            sql+="FROM VENTA V INNER JOIN DETALLE_VENTA D ";
+            sql+="ON D.NUM_TICKET=V.NUM_TICKET ";
+            sql+="INNER JOIN PRODUCTO P ";
+            sql+="ON P.COD_PRODUCTO=D.COD_PRODUCTO ";
+            sql+="WHERE P.NOMBRE=? AND V.FECHA BETWEEN ? AND ? ";
+            sql+="ORDER BY P.NOMBRE ASC ";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1,det.getNombreProducto());
+            instruccion.setString(2,det.getFechaInicio());
+            instruccion.setString(3, det.getFechaFinal());
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<DetalleBEAN>();
+            
+            while(tabla.next()){
+                DetalleBEAN detalle=new DetalleBEAN();
+                detalle.setNumTicket(tabla.getString(1));
+                detalle.setCodProducto(tabla.getString(2));
+                detalle.setNombreProducto(tabla.getString(3));
+                detalle.setStock(tabla.getInt(4));
+                detalle.setCantidad(tabla.getInt(5));
+                detalle.setPrecioVenta(tabla.getDouble(6));
+                detalle.setMontoSubtotal(tabla.getDouble(7));
+                detalle.setFechaRegistro(tabla.getString(8));
+                
+                lista.add(detalle);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
 }

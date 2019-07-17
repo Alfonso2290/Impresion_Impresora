@@ -9,13 +9,13 @@ import java.awt.*;
 public class VentanaConsultas extends JFrame{
     
     private JPanel lamina;
-    private JLabel cliente,producto,venta,cli,pro ,ven,titulo;
+    private JLabel cliente,producto,venta,cli,pro ,ven,titulo,detalle,det;
     private JButton btnAtras;
     
     public VentanaConsultas(){
         
         setTitle("Selección de consulta");
-        setSize(500,320);
+        setSize(650,320);
         setResizable(false);
         setLocationRelativeTo(null);
 
@@ -33,7 +33,7 @@ public class VentanaConsultas extends JFrame{
         Font fuenteTitulo=new Font("Decker", Font.BOLD, 20);
         
         titulo=new JLabel("SELECCIÓN DE CONSULTA");
-        titulo.setBounds(120,20,300,30);
+        titulo.setBounds(200,20,300,30);
         titulo.setFont(fuenteTitulo);
         titulo.setForeground(ColorFuente);
         
@@ -67,6 +67,16 @@ public class VentanaConsultas extends JFrame{
         ven.setFont(fuenteCamposLabel);
         ven.addMouseListener(new eventoMouse());
         
+        detalle=new JLabel(new ImageIcon("src/imagenes/detalle.png"));
+        detalle.setBounds(485,70,100,150);
+        detalle.addMouseListener(new eventoMouse());
+        
+        det=new JLabel("DETALLE VENTAS");
+        det.setBounds(465,160,180,150);
+        det.setForeground(ColorFuente);
+        det.setFont(fuenteCamposLabel);
+        det.addMouseListener(new eventoMouse());
+        
         btnAtras=new JButton(new ImageIcon("src/imagenes/atras.png"));
         btnAtras.setBounds(10,260,30,20);
         btnAtras.addMouseListener(new ColorBotones(ColorFuente,Color.WHITE,btnAtras));
@@ -90,6 +100,8 @@ public class VentanaConsultas extends JFrame{
         lamina.add(venta);
         lamina.add(ven);
         lamina.add(btnAtras);
+        lamina.add(detalle);
+        lamina.add(det);
         
         add(lamina);
     }
@@ -118,6 +130,14 @@ public class VentanaConsultas extends JFrame{
                 
                 dispose();
                 VentanaConsultaVentas ventana=new VentanaConsultaVentas();
+                ventana.setVisible(true);
+                ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            }
+            
+            if(e.getSource()==detalle || e.getSource()==det){
+                
+                dispose();
+                VentanaConsultaDetalleVentas ventana=new VentanaConsultaDetalleVentas();
                 ventana.setVisible(true);
                 ventana.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             }

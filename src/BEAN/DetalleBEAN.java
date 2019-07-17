@@ -9,11 +9,27 @@ public class DetalleBEAN {
     private String nombreProducto,descripcionProducto;
     private double precioVenta;
     private int stock,estado;
-    private String dni,fechaRegistro;
+    private String dni,fechaRegistro,fechaInicio,fechaFinal;
     private double montoTotal,igv,montoNeto;
 
     public String getCodProducto() {
         return codProducto;
+    }
+
+    public String getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(String fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public String getFechaFinal() {
+        return fechaFinal;
+    }
+
+    public void setFechaFinal(String fechaFinal) {
+        this.fechaFinal = fechaFinal;
     }
 
     public void setCodProducto(String codProducto) {

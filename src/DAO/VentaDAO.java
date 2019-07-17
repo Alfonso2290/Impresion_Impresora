@@ -98,6 +98,191 @@ public class VentaDAO {
         return lista;
     }
     
+    public ArrayList<VentaBEAN> listarVentasFiltroFechaInicio(VentaBEAN ven){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT * FROM VENTA WHERE FECHA>=?";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1,ven.getFechaInicio());
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<VentaBEAN>();
+            
+            while(tabla.next()){
+                VentaBEAN venta=new VentaBEAN();
+                venta.setNumTicket(tabla.getString(1));
+                venta.setDni(tabla.getString(2));
+                venta.setFecha(tabla.getString(3));
+                venta.setMontoTotal(tabla.getDouble(4));
+                venta.setIgv(tabla.getDouble(5));
+                venta.setMontoNeto(tabla.getDouble(6));
+                
+                lista.add(venta);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
+    
+    public ArrayList<VentaBEAN> listarVentasFiltroFechaFinal(VentaBEAN ven){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT * FROM VENTA WHERE FECHA<=?";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1,ven.getFechaFinal());
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<VentaBEAN>();
+            
+            while(tabla.next()){
+                VentaBEAN venta=new VentaBEAN();
+                venta.setNumTicket(tabla.getString(1));
+                venta.setDni(tabla.getString(2));
+                venta.setFecha(tabla.getString(3));
+                venta.setMontoTotal(tabla.getDouble(4));
+                venta.setIgv(tabla.getDouble(5));
+                venta.setMontoNeto(tabla.getDouble(6));
+                
+                lista.add(venta);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
+    
+    public ArrayList<VentaBEAN> listarVentasFiltroDNIFechaInicio(VentaBEAN ven){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT * FROM VENTA WHERE DNI=? AND FECHA>=?";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1,ven.getDni());
+            instruccion.setString(2,ven.getFechaInicio());
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<VentaBEAN>();
+            
+            while(tabla.next()){
+                VentaBEAN venta=new VentaBEAN();
+                venta.setNumTicket(tabla.getString(1));
+                venta.setDni(tabla.getString(2));
+                venta.setFecha(tabla.getString(3));
+                venta.setMontoTotal(tabla.getDouble(4));
+                venta.setIgv(tabla.getDouble(5));
+                venta.setMontoNeto(tabla.getDouble(6));
+                
+                lista.add(venta);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
+    
+    public ArrayList<VentaBEAN> listarVentasFiltroDNIFechaFinal(VentaBEAN ven){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT * FROM VENTA WHERE DNI=? AND FECHA<=?";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1,ven.getDni());
+            instruccion.setString(2,ven.getFechaFinal());
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<VentaBEAN>();
+            
+            while(tabla.next()){
+                VentaBEAN venta=new VentaBEAN();
+                venta.setNumTicket(tabla.getString(1));
+                venta.setDni(tabla.getString(2));
+                venta.setFecha(tabla.getString(3));
+                venta.setMontoTotal(tabla.getDouble(4));
+                venta.setIgv(tabla.getDouble(5));
+                venta.setMontoNeto(tabla.getDouble(6));
+                
+                lista.add(venta);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
+    
+    public ArrayList<VentaBEAN> listarVentasFiltroFechaInicioFechaFinal(VentaBEAN ven){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT * FROM VENTA WHERE FECHA BETWEEN ? AND ?";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1,ven.getFechaInicio());
+            instruccion.setString(2,ven.getFechaFinal());
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<VentaBEAN>();
+            
+            while(tabla.next()){
+                VentaBEAN venta=new VentaBEAN();
+                venta.setNumTicket(tabla.getString(1));
+                venta.setDni(tabla.getString(2));
+                venta.setFecha(tabla.getString(3));
+                venta.setMontoTotal(tabla.getDouble(4));
+                venta.setIgv(tabla.getDouble(5));
+                venta.setMontoNeto(tabla.getDouble(6));
+                
+                lista.add(venta);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
+    
+    public ArrayList<VentaBEAN> listarVentasFiltroDNIFechaInicioFechaFinal(VentaBEAN ven){
+        
+        try{
+            conexion=new ConexionBD();
+            sql="SELECT * FROM VENTA WHERE DNI=? AND FECHA BETWEEN ? AND ?";
+            instruccion=conexion.getConexionBD().prepareStatement(sql);
+            instruccion.setString(1, ven.getDni());
+            instruccion.setString(2,ven.getFechaInicio());
+            instruccion.setString(3,ven.getFechaFinal());
+            tabla=instruccion.executeQuery();
+            lista=new ArrayList<VentaBEAN>();
+            
+            while(tabla.next()){
+                VentaBEAN venta=new VentaBEAN();
+                venta.setNumTicket(tabla.getString(1));
+                venta.setDni(tabla.getString(2));
+                venta.setFecha(tabla.getString(3));
+                venta.setMontoTotal(tabla.getDouble(4));
+                venta.setIgv(tabla.getDouble(5));
+                venta.setMontoNeto(tabla.getDouble(6));
+                
+                lista.add(venta);
+            }
+            
+            
+        }catch(Exception ex){
+            ex.printStackTrace();
+        }
+        
+        return lista;
+    }
+    
     public void eliminarVenta(VentaBEAN venta){
 
         try{

@@ -173,8 +173,8 @@ public class PanelConsultaClientes extends JPanel
         else
         {
             scroll.setVisible(false);
-            mensaje.setBounds(180,150,470,50);
-            mensaje.setText(msj);
+            mensaje.setBounds(250,150,470,50);
+            mensaje.setText("<< No tienes clientes actualmente >>");
         }
     }
     

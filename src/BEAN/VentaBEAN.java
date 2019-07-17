@@ -2,11 +2,27 @@
 package BEAN;
 
 public class VentaBEAN {
-    private String numTicket,dni,fecha;
+    private String numTicket,dni,fecha,fechaInicio,fechaFinal;
     private double montoTotal,igv,montoNeto;
 
     public String getNumTicket() {
         return numTicket;
+    }
+
+    public String getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(String fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public String getFechaFinal() {
+        return fechaFinal;
+    }
+
+    public void setFechaFinal(String fechaFinal) {
+        this.fechaFinal = fechaFinal;
     }
 
     public void setNumTicket(String numTicket) {
