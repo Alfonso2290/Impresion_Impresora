@@ -20,7 +20,7 @@ public class PanelConsultaDetalleVentas extends JPanel
     private JTable tabla;
     private JScrollPane scroll;
     private JButton btnBuscar,btnAtras;
-    private JLabel retornar,fechaI,fechaF;
+    private JLabel retornar,fechaI,fechaF,agregar,importeTotal;
     private JComboBox cbProducto;
     private ArrayList<DetalleBEAN> lista,listaProductos;
     private JLabel mensaje;
@@ -28,6 +28,7 @@ public class PanelConsultaDetalleVentas extends JPanel
     private int filasTabla;
     private int columnasTabla;
     private JDateChooser fechaInicio,fechaFinal;
+    private double it=0.0;
     
     public PanelConsultaDetalleVentas()
     {
@@ -94,6 +95,19 @@ public class PanelConsultaDetalleVentas extends JPanel
         mensaje.setFont(new Font("Arial",Font.BOLD,18));
         mensaje.setForeground(Color.RED);
         
+        String ruta2="/imagenes/agregar.png";
+        URL path=this.getClass().getResource(ruta2);
+        ImageIcon icono2=new ImageIcon(path);
+        agregar=new JLabel(icono2);
+        agregar.setBounds(680, 343, 30, 30);
+        agregar.addMouseListener(new AccionMouse());
+        
+        importeTotal=new JLabel("S/." + it);
+        importeTotal.setBounds(720, 343, 200, 30);
+        importeTotal.setFont(fuenteCamposLabel);
+        importeTotal.setForeground(ColorFuente);
+        importeTotal.setVisible(false);
+        
         capturarListaTabla();
         
         if(lista.size()!=0)
@@ -109,6 +123,8 @@ public class PanelConsultaDetalleVentas extends JPanel
             add(fechaFinal);
             add(fechaI);
             add(fechaF);
+            add(agregar);
+            add(importeTotal);
             add(btnBuscar);
             add(retornar);
             add(scroll);
@@ -120,8 +136,9 @@ public class PanelConsultaDetalleVentas extends JPanel
         
         add(mensaje);
         
+        
         btnAtras=new JButton(new ImageIcon("src/imagenes/atras.png"));
-        btnAtras.setBounds(10,333,30,20);
+        btnAtras.setBounds(10,353,30,20);
         btnAtras.addMouseListener(new ColorBotones(ColorFuente,Color.WHITE,btnAtras));
         btnAtras.setBackground(null);
         btnAtras.setForeground(ColorFuente);
@@ -223,13 +240,13 @@ public class PanelConsultaDetalleVentas extends JPanel
                     llenarComboBox();
                     lista=detD.getListaDetalleVentasFiltroNombreProductoFechaInicioFechaFinal(detalle);
                     llenarTabla("");
-                }
-                else
+                }else
                 {
                     lista=detD.getListaDetalleVentas();
                     llenarTabla("");
                     //JOptionPane.showMessageDialog(null, "Para realizar un filtro Usted debe seleccionar un Nombre y/o Distrito");
                 }
+                importeTotal.setVisible(false);
             }
             
         }
@@ -265,8 +282,26 @@ public class PanelConsultaDetalleVentas extends JPanel
                 capturarListaTabla();
                 llenarTabla("");
                 cbProducto.setSelectedIndex(0);
+                importeTotal.setVisible(false);
+            }
+            
+            if(e.getSource()==agregar)
+            {   
+                if(lista.size()!=0){
+                    importeTotal.setVisible(true);
+                    actualizarImporteTotal();
+                }
             }
         }
+    }
+    
+    public void actualizarImporteTotal(){
+        it=0.0;
+        for(int i=0;i<tabla.getRowCount();i++){
+            it+=Double.parseDouble(tabla.getValueAt(i,UtilidadesDetalleVenta.SUBTOTAL).toString());
+        }
+
+        importeTotal.setText("S/." + formato.format(it));    
     }
 
     public JButton getBtnBuscar() {

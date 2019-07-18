@@ -13,7 +13,7 @@ public class VentanaConsultaDetalleVentas extends JFrame
     {
         setTitle("Registro Detalle Ventas");
         Dimension tamañoPantalla=Toolkit.getDefaultToolkit().getScreenSize();
-        setSize(tamañoPantalla.width*3/5,tamañoPantalla.height/2);
+        setSize(tamañoPantalla.width*3/5,tamañoPantalla.height/2+30);
         setLocationRelativeTo(null);
         setResizable(false);
         Inicio();
