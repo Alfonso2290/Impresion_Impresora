@@ -184,7 +184,7 @@ public class DetalleDAO {
             sql+="ON D.NUM_TICKET=V.NUM_TICKET ";
             sql+="INNER JOIN PRODUCTO P ";
             sql+="ON P.COD_PRODUCTO=D.COD_PRODUCTO ";
-            sql+="WHERE V.FECHA>=? ";
+            sql+="WHERE V.FECHA=? ";
             sql+="ORDER BY P.NOMBRE ASC ";
             instruccion=conexion.getConexionBD().prepareStatement(sql);
             instruccion.setString(1,det.getFechaInicio());
@@ -262,7 +262,7 @@ public class DetalleDAO {
             sql+="ON D.NUM_TICKET=V.NUM_TICKET ";
             sql+="INNER JOIN PRODUCTO P ";
             sql+="ON P.COD_PRODUCTO=D.COD_PRODUCTO ";
-            sql+="WHERE V.FECHA>=? AND P.NOMBRE=? ";
+            sql+="WHERE V.FECHA=? AND P.NOMBRE=? ";
             sql+="ORDER BY P.NOMBRE ASC ";
             instruccion=conexion.getConexionBD().prepareStatement(sql);
             instruccion.setString(1,det.getFechaInicio());

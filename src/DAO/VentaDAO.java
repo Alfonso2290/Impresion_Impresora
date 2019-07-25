@@ -102,7 +102,7 @@ public class VentaDAO {
         
         try{
             conexion=new ConexionBD();
-            sql="SELECT * FROM VENTA WHERE FECHA>=?";
+            sql="SELECT * FROM VENTA WHERE FECHA=?";
             instruccion=conexion.getConexionBD().prepareStatement(sql);
             instruccion.setString(1,ven.getFechaInicio());
             tabla=instruccion.executeQuery();
@@ -162,7 +162,7 @@ public class VentaDAO {
         
         try{
             conexion=new ConexionBD();
-            sql="SELECT * FROM VENTA WHERE DNI=? AND FECHA>=?";
+            sql="SELECT * FROM VENTA WHERE DNI=? AND FECHA=?";
             instruccion=conexion.getConexionBD().prepareStatement(sql);
             instruccion.setString(1,ven.getDni());
             instruccion.setString(2,ven.getFechaInicio());
