@@ -29,7 +29,7 @@ public class ProductoDAO {
             sql+="ON C.COD_PRODUCTO=D.COD_PRODUCTO ";
             sql+="WHERE A.DNI=? ";
             sql+="GROUP BY (D.NOMBRE) ";
-            sql+="ORDER BY COUNT(D.NOMBRE) DESC ";
+            sql+="ORDER BY SUM(C.MONTO_SUBTOTAL) DESC ";
             instruccion=conexion.getConexionBD().prepareStatement(sql);
             instruccion.setString(1, cliente.getDni());
             tabla=instruccion.executeQuery();

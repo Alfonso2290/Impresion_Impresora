@@ -78,17 +78,17 @@ public class PanelImpresionTicketCupon extends JPanel{
             add(nombreProducto);
             
             JLabel cantidadProducto=new JLabel(obj.getCantidad() + "");
-            cantidadProducto.setBounds(135,crecimientoY,220,20);
+            cantidadProducto.setBounds(125,crecimientoY,220,20);
             cantidadProducto.setFont(fondo4);
             add(cantidadProducto);
             
             JLabel precioDeVenta=new JLabel("S/." + formato.format(obj.getPrecioVenta()) + "");
-            precioDeVenta.setBounds(160,crecimientoY,220,20);
+            precioDeVenta.setBounds(150,crecimientoY,220,20);
             precioDeVenta.setFont(fondo4);
             add(precioDeVenta);
             
             JLabel montoSubtotal=new JLabel("S/." + formato.format(obj.getMontoSubtotal()) + "");
-            montoSubtotal.setBounds(190,crecimientoY,220,20);
+            montoSubtotal.setBounds(180,crecimientoY,220,20);
             montoSubtotal.setFont(fondo4);
             add(montoSubtotal);
             
@@ -109,7 +109,7 @@ public class PanelImpresionTicketCupon extends JPanel{
             add(msje1);
             
             lblMontoTotal=new JLabel("S/." + formato.format(montoTotal));
-            lblMontoTotal.setBounds(190,crecimientoY,220,20);
+            lblMontoTotal.setBounds(180,crecimientoY,220,20);
             lblMontoTotal.setFont(fondo4);
             add(lblMontoTotal);
             
@@ -119,7 +119,7 @@ public class PanelImpresionTicketCupon extends JPanel{
             add(msje2);
             
             lblIgv=new JLabel(formato.format(IGV) + "%");
-            lblIgv.setBounds(190,crecimientoY,220,20);
+            lblIgv.setBounds(180,crecimientoY,220,20);
             lblIgv.setFont(fondo4);
             add(lblIgv);
             
@@ -134,7 +134,7 @@ public class PanelImpresionTicketCupon extends JPanel{
             add(msje3);
             
             lblMontoNeto=new JLabel("S/." + formato.format(montoNeto));
-            lblMontoNeto.setBounds(185,crecimientoY,220,20);
+            lblMontoNeto.setBounds(180,crecimientoY,220,20);
             lblMontoNeto.setFont(fondo4);
             add(lblMontoNeto);
             
@@ -154,7 +154,7 @@ public class PanelImpresionTicketCupon extends JPanel{
                 mensaje="en cualquiera de nuestros productos";
                 x=10;y=100;dx=300;dy=30;
                 directorio="/imagenes/cafeteria.png";
-                imgx=30;imgy=140;imgdx=180;imgdy=120;
+                imgx=30;imgy=140;imgdx=180;imgdy=80;
                 
                 URL ruta=this.getClass().getResource(directorio);
                 icono=new JLabel(new ImageIcon(ruta));
@@ -162,7 +162,7 @@ public class PanelImpresionTicketCupon extends JPanel{
             }else{
                 porcentaje="20%";
                 x=80;y=tamañoInicioY + 60;dx=200;dy=30;
-                imgx=30;imgy=tamañoInicioY + 90;imgdx=180;imgdy=100;
+                imgx=30;imgy=tamañoInicioY + 90;imgdx=180;imgdy=80;
                 icono=new JLabel();
                 icono.setBounds(imgx,imgy,imgdx,imgdy);
                  

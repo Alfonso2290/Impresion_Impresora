@@ -47,31 +47,31 @@ public class Ventana extends JFrame{
 
             public void actionPerformed(ActionEvent e) {
 
-                    try {
-                            PrinterJob imp=PrinterJob.getPrinterJob();
-                            imp.setPrintable(new Printable() {
+                try {
+                    PrinterJob imp=PrinterJob.getPrinterJob();
+                    imp.setPrintable(new Printable() {
 
-                                    @Override
-                                    public int print(Graphics g, PageFormat pagFor, int index) throws PrinterException {
+                            @Override
+                            public int print(Graphics g, PageFormat pagFor, int index) throws PrinterException {
 
-                                            if(index>0)
-                                                    return NO_SUCH_PAGE;
+                                if(index>0)
+                                        return NO_SUCH_PAGE;
 
-                                            Graphics2D g2=(Graphics2D)g;
-                                            g2.translate(pagFor.getImageableX()+8, pagFor.getImageableY()+8);
-                                            g2.scale(1.0,1.0);
-                                            miPanel.printAll(g);
+                                Graphics2D g2=(Graphics2D)g;
+                                g2.translate(pagFor.getImageableX()+8, pagFor.getImageableY()+8);
+                                g2.scale(1.0,1.0);
+                                miPanel.printAll(g);
 
-                                            return PAGE_EXISTS;
-                                    }
-                            });;
-                            boolean top=imp.printDialog();
-                            if(top) {
-                                    imp.print();
+                                return PAGE_EXISTS;
                             }
-                    }catch(Exception ex) {
-                            ex.printStackTrace();
+                    });;
+                    boolean top=imp.printDialog();
+                    if(top) {
+                            imp.print();
                     }
+                }catch(Exception ex) {
+                    ex.printStackTrace();
+                }
             }
 
         });

@@ -26,7 +26,7 @@ public class VentanaImpresionTicketCupon extends JFrame{
     }
 
     private void inicioComponentes() {
-        setTitle("Imprimir Cupon");
+        setTitle("Ticket + Cupon");
         cargarLista();
         definirTamañoVentana();
         setLocationRelativeTo(null);
