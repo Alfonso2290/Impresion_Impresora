@@ -76,7 +76,7 @@ public class PanelRegistroVentas extends JPanel
         scroll.setViewportView(tabla);
 
         mensaje3=new JLabel();
-        mensaje3.setBounds(250,70,350,50);
+        mensaje3.setBounds(600,150,350,50);
         mensaje3.setFont(new Font("Arial",Font.BOLD,18));
         mensaje3.setForeground(Color.RED);
         
