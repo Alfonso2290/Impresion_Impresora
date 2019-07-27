@@ -5,6 +5,12 @@ import BEAN.*;
 import DAO.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import static java.awt.print.Printable.NO_SUCH_PAGE;
+import static java.awt.print.Printable.PAGE_EXISTS;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -136,6 +142,8 @@ public class VentanaRegistroVentas extends JFrame implements ActionListener,Focu
                 miPanel.montoT=0;
                 miPanel.igvActual=18;
                 miPanel.montoN=0;
+                
+                parametrizarTicket();
                 dispose();
                 VentanaRegistros ventana=new VentanaRegistros();
                 ventana.setVisible(true);
@@ -144,6 +152,51 @@ public class VentanaRegistroVentas extends JFrame implements ActionListener,Focu
         }else{
             JOptionPane.showMessageDialog(null, "Usted debe realizar alguna compra");
             miPanel.getTxtNumTicket().requestFocus();
+        }
+    }
+    
+    public void parametrizarTicket(){
+        
+        String dniCliente=miPanel.getTxtDni().getText();
+        ClienteBEAN cliente=new ClienteBEAN();
+        cliente.setDni(dniCliente);
+        ProductoDAO productoDAO=new ProductoDAO();
+        ArrayList<ProductoBEAN> lista;
+        String nombreProducto=productoDAO.getNombreProductoMasConsumido(cliente);
+        String codigoProducto=productoDAO.getCodigoProductoMasConsumido(nombreProducto);
+        lista=productoDAO.getProductoMasConsumido(codigoProducto,nombreProducto);
+        
+        String numeroTicket=miPanel.getTxtNumTicket().getText();
+        VentanaImpresionTicketCupon miVentana=new VentanaImpresionTicketCupon(lista,numeroTicket);
+        miVentana.setVisible(true);
+        
+        
+        try {
+            PrinterJob imp=PrinterJob.getPrinterJob();
+            imp.setPrintable(new Printable() {
+
+                @Override
+                public int print(Graphics g, PageFormat pagFor, int index) throws PrinterException {
+
+                        if(index>0)
+                                return NO_SUCH_PAGE;
+
+                        Graphics2D g2=(Graphics2D)g;
+                        g2.translate(pagFor.getImageableX()+8, pagFor.getImageableY()+8);
+                        g2.scale(1.0,1.0);
+                        miVentana.getMiPanel().printAll(g);
+
+                        return PAGE_EXISTS;
+                }
+            });;
+            boolean top=imp.printDialog();
+            if(top) {
+                    imp.print();
+            }
+        }catch(Exception ex) {
+            ex.printStackTrace();
+        }finally{
+            miVentana.dispose();
         }
     }
 
