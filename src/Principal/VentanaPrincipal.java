@@ -3,11 +3,12 @@ package Principal;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.net.URL;
 
 public class VentanaPrincipal extends JFrame{
     
     private JPanel miPanel;
-    private JLabel mensaje1,mensaje2,mensaje3;
+    private JLabel icono;
     private JButton ingresar;
     
     public VentanaPrincipal(){
@@ -22,27 +23,13 @@ public class VentanaPrincipal extends JFrame{
     private void inicioComponentes(){
         
         setLayout(new BorderLayout());
+        
         Color ColorFuente=new Color(232,44,12);
         Font fuenteCamposLabel=new Font("Decker", Font.BOLD, 16);
         
         miPanel=new JPanel();
         miPanel.setLayout(null);
-        miPanel.setBackground(Color.LIGHT_GRAY.brighter());
-        
-        mensaje1=new JLabel("BIENVENIDOS");
-        mensaje1.setFont(new Font("Decker",Font.BOLD,16));
-        mensaje1.setBounds(45,30,110,20);
-        mensaje1.setForeground(ColorFuente);
-        
-        mensaje2=new JLabel("AL");
-        mensaje2.setFont(new Font("Decker",Font.BOLD,16));
-        mensaje2.setBounds(75,55,50,20);
-        mensaje2.setForeground(ColorFuente);
-        
-        mensaje3=new JLabel("SISTEMA");
-        mensaje3.setFont(new Font("Decker",Font.BOLD,16));
-        mensaje3.setBounds(60,80,100,20);
-        mensaje3.setForeground(ColorFuente);
+        miPanel.setBackground(new Color(215,215,215));
         
         ingresar=new JButton("Ingresar");
         ingresar.addMouseListener(new ColorBotones(ColorFuente,Color.WHITE,ingresar));
@@ -58,11 +45,14 @@ public class VentanaPrincipal extends JFrame{
             
         });
         
+        URL ruta=this.getClass().getResource("/imagenes/logo.jpg");
+        icono=new JLabel(new ImageIcon(ruta));
+        icono.setBounds(0,0,200,150);
+        
         add(ingresar,BorderLayout.SOUTH);
-        miPanel.add(mensaje1);
-        miPanel.add(mensaje2);
-        miPanel.add(mensaje3);
-        add(miPanel);
+        miPanel.add(icono);
+        add(miPanel,BorderLayout.CENTER);
+        
     }
     
     private class cambioCampo extends KeyAdapter{
